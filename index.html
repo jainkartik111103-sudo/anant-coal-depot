@@ -2,7 +2,7 @@
 <html lang="en" data-lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Anant Coal Depot - Guwahati's Trusted Coal Supplier Since 1990</title>
 <meta name="description" content="Anant Coal Depot, NH 37 Lalmati, Guwahati. Hard Coke, Charcoal, Steam Coal, Earthing Coal & Earthing Salt. Bulk & retail, pan India delivery since 1990. Open daily 8 AM to 8 PM.">
 <link rel="canonical" href="https://anantcoaldepot.in/">
@@ -438,10 +438,14 @@
   .navdd .navdd-menu{position:absolute; top:calc(100% + 8px); left:0; background:var(--white); border:1px solid var(--line); min-width:240px; z-index:60; box-shadow:0 8px 24px rgba(0,0,0,.12); padding:6px 0; text-transform:none;}
   .navdd .navdd-menu a{display:block; padding:12px 16px; font-size:13px; min-height:44px; letter-spacing:0; text-transform:none;}
   .navdd .navdd-menu a:hover{background:var(--paper);}
-  @media(max-width:900px){ nav.main{display:none;} }
+  @media(max-width:900px){
+    nav.main{display:flex; flex-wrap:wrap; gap:6px 14px; font-size:11.5px; width:100%; order:3; padding-top:10px;}
+    header .wrap{flex-wrap:wrap;}
+    .head-cta .btn{display:none;} /* sticky bar covers Call/WhatsApp on mobile */
+  }
 
   /* ---------- HERO ---------- */
-  .hero{background:var(--charcoal); color:var(--white); padding:80px 0 64px;}
+  .hero{background:var(--charcoal); color:var(--white); padding:clamp(40px,8vw,80px) 0 clamp(36px,7vw,64px);}
   .hero .wrap{display:grid; grid-template-columns:1.1fr .9fr; gap:56px; align-items:center;}
   @media(max-width:900px){ .hero .wrap{grid-template-columns:1fr;} }
   .hero h1{font-size:clamp(34px,5vw,54px); color:var(--white); margin-bottom:18px;}
@@ -567,7 +571,7 @@
   .cart-form-label:first-child{margin-top:0;}
   .cart-form-input{
     width:100%; background:var(--paper); border:1px solid var(--line); color:var(--ink);
-    padding:10px 12px; font-size:13.5px; font-family:inherit; border-radius:2px;
+    padding:10px 12px; font-size:16px; font-family:inherit; border-radius:2px;
   }
   textarea.cart-form-input{min-height:52px; resize:vertical;}
   .overlay{position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:99; opacity:0; pointer-events:none; transition:opacity .3s;}
@@ -600,7 +604,7 @@
   .modal-body input[type="text"], .modal-body input[type="number"], .modal-body input[type="tel"],
   .modal-body select, .modal-body textarea{
     width:100%; background:var(--charcoal-2); border:1px solid var(--line-dark); color:var(--white);
-    padding:12px 14px; font-size:14px; font-family:inherit; border-radius:2px;
+    padding:12px 14px; font-size:16px; font-family:inherit; border-radius:2px;
   }
   .modal-body textarea{min-height:64px; resize:vertical;}
   .modal-body select{appearance:none; -webkit-appearance:none; cursor:pointer;
