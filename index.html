@@ -420,6 +420,24 @@
   nav.main a:hover{color:var(--ink);}
   .head-cta{display:flex; gap:10px;}
   .head-cta .btn{padding:11px 18px; font-size:13px;}
+
+
+  /* router strip (R1) */
+  .router{background:var(--gold); padding:20px 0;}
+  .router .router-h{font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--charcoal); margin-bottom:12px;}
+  .router-chips{display:flex; gap:10px; flex-wrap:wrap;}
+  .rchip{display:inline-flex; align-items:center; gap:8px; background:var(--charcoal); color:var(--white); padding:0 18px; min-height:48px; font-size:13.5px; font-weight:600; border-radius:6px;}
+  .rchip:hover{background:#000; color:var(--gold-light);}
+  @media(max-width:640px){ .router-chips{display:grid; grid-template-columns:1fr 1fr;} .rchip{justify-content:flex-start;} }
+  /* industries dropdown (R1) */
+  .navdd{position:relative; display:inline-block;}
+  .navdd summary{cursor:pointer; list-style:none; display:inline-flex; align-items:center; gap:4px; color:var(--ash); font-size:13px; font-weight:600; letter-spacing:.03em; text-transform:uppercase;}
+  .navdd summary::-webkit-details-marker{display:none;}
+  .navdd summary::after{content:"\25BE"; font-size:10px;}
+  .navdd summary:hover{color:var(--ink);}
+  .navdd .navdd-menu{position:absolute; top:calc(100% + 8px); left:0; background:var(--white); border:1px solid var(--line); min-width:240px; z-index:60; box-shadow:0 8px 24px rgba(0,0,0,.12); padding:6px 0; text-transform:none;}
+  .navdd .navdd-menu a{display:block; padding:12px 16px; font-size:13px; min-height:44px; letter-spacing:0; text-transform:none;}
+  .navdd .navdd-menu a:hover{background:var(--paper);}
   @media(max-width:900px){ nav.main{display:none;} }
 
   /* ---------- HERO ---------- */
@@ -432,14 +450,14 @@
   .hero-cta{display:flex; gap:14px; flex-wrap:wrap;}
 
   .statline{
-    display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid var(--line-dark);
+    display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--line-dark);
     margin-top:52px;
   }
   .statline .stat{padding:22px 18px; border-right:1px solid var(--line-dark); text-align:center;}
   .statline .stat:last-child{border-right:none;}
   .statline .num{font-family:'Fraunces',serif; font-size:26px; color:var(--gold-light); font-weight:600;}
   .statline .lbl{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ash-light); margin-top:4px;}
-  @media(max-width:640px){ .statline{grid-template-columns:repeat(2,1fr);} .statline .stat{border-bottom:1px solid var(--line-dark);} }
+  @media(max-width:640px){ .statline{grid-template-columns:repeat(3,1fr);} .statline .stat{padding:16px 8px;} .statline .num{font-size:20px;} }
 
   /* hero visual - carousel teaser inside hero */
   .hero-visual{
@@ -742,15 +760,23 @@
       </div>
     </div>
     <nav class="main">
-      <a href="#areas" data-i18n="nav_areas">Areas</a>
-      <a href="#faq" data-i18n="nav_faq">FAQ</a>
       <a href="#products" data-i18n="nav_products">Products</a>
+      <details class="navdd">
+        <summary data-i18n="nav_industries">Industries</summary>
+        <div class="navdd-menu">
+          <a href="coal-for-brick-kilns/" data-i18n="nav_ind_kilns">Brick Kilns</a>
+          <a href="coal-for-hotels-restaurants-dhabas/" data-i18n="nav_ind_rest">Restaurants &amp; Dhabas</a>
+          <a href="coal-for-foundries-rolling-mills/" data-i18n="nav_ind_foundry">Foundries &amp; Rolling Mills</a>
+          <a href="coal-for-tea-gardens/" data-i18n="nav_ind_tea">Tea Gardens</a>
+          <a href="coal-delivery-assam-northeast/" data-i18n="nav_ind_delivery">Delivery: Assam &amp; NE</a>
+        </div>
+      </details>
       <a href="guides/" data-i18n="nav_guides">Guides</a>
       <a href="#reviews" data-i18n="nav_reviews">Reviews</a>
       <a href="#contact" data-i18n="nav_contact">Contact</a>
     </nav>
     <div class="head-cta">
-      <button class="cart-btn" id="cartOpenBtn">🛒 <span data-i18n="cart">Cart</span> <span class="cart-count" id="cartCount">0</span></button>
+      <button class="cart-btn" id="cartOpenBtn">📋 <span data-i18n="cart">Enquiry List</span> <span class="cart-count" id="cartCount">0</span></button>
       <a class="btn btn-outline" href="https://wa.me/919435018204" target="_blank" rel="noopener" data-i18n="whatsapp">WhatsApp</a>
       <a class="btn btn-dark" href="tel:+919435018204" data-i18n="call">Call Now</a>
     </div>
@@ -760,7 +786,7 @@
 <div class="overlay" id="overlay"></div>
 <div class="cart-drawer" id="cartDrawer">
   <div class="cart-head">
-    <h3 data-i18n="your_cart">Your Cart</h3>
+    <h3 data-i18n="your_cart">Your Enquiry List</h3>
     <button class="cart-close" id="cartCloseBtn">×</button>
   </div>
   <div class="cart-items" id="cartItems">
@@ -787,7 +813,7 @@
 <!-- ADD TO CART MODAL -->
 <div class="modal" id="cartModal">
   <div class="modal-head">
-    <h3 id="cartModalTitle">Add to Cart</h3>
+    <h3 id="cartModalTitle">Add to Enquiry</h3>
     <button class="modal-close" onclick="closeModals()">×</button>
   </div>
   <div class="modal-body">
@@ -807,7 +833,7 @@
     </div>
     <input type="text" id="cartUnitOther" placeholder="Enter unit manually" style="display:none; margin-top:8px;">
 
-    <button class="btn btn-gold" onclick="confirmAddToCart()">🛒 <span data-i18n="add_to_cart">Add to Cart</span></button>
+    <button class="btn btn-gold" onclick="confirmAddToCart()">📋 <span data-i18n="add_to_cart">Add to Enquiry</span></button>
   </div>
 </div>
 
@@ -862,14 +888,13 @@
       <h1 data-i18n="hero_h1">Coal Supplier in Guwahati,<br><em>Trusted Since 1990.</em></h1>
       <p class="lede" data-i18n="hero_lede">Anant Coal Depot stocks Hard Coke, Steam Coal, Charcoal, Earthing Coal and Earthing Salt at NH 37, Lalmati. Bulk and retail supply for homes, brick kilns and industries across Assam, with pan India delivery.</p>
       <div class="hero-cta">
-        <a class="btn btn-gold" href="tel:+919435018204">📞 <span data-i18n="call_number">94350 18204</span></a>
-        <a class="btn btn-outline" style="color:#fff" href="https://wa.me/919435018204" target="_blank" rel="noopener" data-i18n="whatsapp">WhatsApp</a>
+        <a class="btn btn-gold" href="https://wa.me/919435018204" target="_blank" rel="noopener" data-i18n="hero_cta_wa">💬 Get Today's Price on WhatsApp</a>
+        <a class="btn btn-outline" style="color:#fff" href="tel:+919435018204">📞 <span data-i18n="call_number">94350 18204</span></a>
       </div>
       <p class="hero-trust"><span class="open-dot" id="openDot" aria-hidden="true"></span><span id="openNow" data-i18n="open_now">Open now · closes 8 PM</span><span class="tsep" aria-hidden="true">·</span><span data-i18n="rated_line">5.0 ★ on Google Maps</span></p>
 
       <div class="statline">
         <div class="stat"><div class="num">35+</div><div class="lbl" data-i18n="stat_years">Years in Business</div></div>
-        <div class="stat"><div class="num">1990</div><div class="lbl" data-i18n="stat_est">Established</div></div>
         <div class="stat"><div class="num">NH 37</div><div class="lbl" data-i18n="stat_loc">Lalmati, Guwahati</div></div>
         <div class="stat"><div class="num">5★</div><div class="lbl" data-i18n="stat_rated">Google Rated</div></div>
       </div>
@@ -877,6 +902,20 @@
 
     <div class="hero-visual" style="background-image:url('assets/img/coal-yard-anant-coal-depot-guwahati.webp'); background-size:cover; background-position:center;">
       <div class="tag" data-i18n="hero_visual_tag">NH 37, Lalmati - our depot</div>
+    </div>
+  </div>
+</section>
+
+<!-- ROUTER: user-type self-qualification (R1) -->
+<section class="router" aria-label="Find your product">
+  <div class="wrap">
+    <div class="router-h" data-i18n="router_h">What do you need coal for?</div>
+    <div class="router-chips">
+      <a class="rchip" href="coal-for-hotels-restaurants-dhabas/"><span aria-hidden="true">🍢</span> <span data-i18n="router_rest">Restaurant / Dhaba</span></a>
+      <a class="rchip" href="coal-for-brick-kilns/"><span aria-hidden="true">🧱</span> <span data-i18n="router_kiln">Brick Kiln</span></a>
+      <a class="rchip" href="charcoal-supplier-guwahati/"><span aria-hidden="true">🏠</span> <span data-i18n="router_home">Home Use</span></a>
+      <a class="rchip" href="earthing-coal-earthing-salt-guwahati/"><span aria-hidden="true">⚡</span> <span data-i18n="router_earth">Earthing (Electricians)</span></a>
+      <a class="rchip" href="coal-for-foundries-rolling-mills/"><span aria-hidden="true">🏭</span> <span data-i18n="router_ind">Industry / Factory</span></a>
     </div>
   </div>
 </section>
@@ -915,7 +954,7 @@
         <a class="prod-link" href="hard-coke-guwahati/" data-i18n="view_details">View Details →</a>
         <div class="pcard-actions">
           <a class="btn btn-gold" href="https://wa.me/919435018204?text=Hello%2C%20what%20is%20today%27s%20price%20of%20Hard%20Coke%3F" target="_blank" rel="noopener">💬 <span data-i18n="wa_price">WhatsApp Price</span></a>
-          <button class="btn btn-outline" onclick="openCartModal('Hard Coke')">🛒 <span data-i18n="add_to_cart">Add to Cart</span></button>
+          <button class="btn btn-outline" onclick="openCartModal('Hard Coke')">📋 <span data-i18n="add_to_cart">Add to Enquiry</span></button>
         </div>
       </div>
       <div class="pcard">
@@ -926,7 +965,7 @@
         <a class="prod-link" href="charcoal-supplier-guwahati/" data-i18n="view_details">View Details →</a>
         <div class="pcard-actions">
           <a class="btn btn-gold" href="https://wa.me/919435018204?text=Hello%2C%20what%20is%20today%27s%20price%20of%20Charcoal%3F" target="_blank" rel="noopener">💬 <span data-i18n="wa_price">WhatsApp Price</span></a>
-          <button class="btn btn-outline" onclick="openCartModal('Charcoal')">🛒 <span data-i18n="add_to_cart">Add to Cart</span></button>
+          <button class="btn btn-outline" onclick="openCartModal('Charcoal')">📋 <span data-i18n="add_to_cart">Add to Enquiry</span></button>
         </div>
       </div>
       <div class="pcard">
@@ -937,7 +976,7 @@
         <a class="prod-link" href="steam-coal-guwahati/" data-i18n="view_details">View Details →</a>
         <div class="pcard-actions">
           <a class="btn btn-gold" href="https://wa.me/919435018204?text=Hello%2C%20what%20is%20today%27s%20price%20of%20Steam%20Coal%3F" target="_blank" rel="noopener">💬 <span data-i18n="wa_price">WhatsApp Price</span></a>
-          <button class="btn btn-outline" onclick="openCartModal('Steam Coal')">🛒 <span data-i18n="add_to_cart">Add to Cart</span></button>
+          <button class="btn btn-outline" onclick="openCartModal('Steam Coal')">📋 <span data-i18n="add_to_cart">Add to Enquiry</span></button>
         </div>
       </div>
       <div class="pcard">
@@ -948,7 +987,7 @@
         <a class="prod-link" href="earthing-coal-earthing-salt-guwahati/" data-i18n="view_details">View Details →</a>
         <div class="pcard-actions">
           <a class="btn btn-gold" href="https://wa.me/919435018204?text=Hello%2C%20what%20is%20today%27s%20price%20of%20Earthing%20Coal%3F" target="_blank" rel="noopener">💬 <span data-i18n="wa_price">WhatsApp Price</span></a>
-          <button class="btn btn-outline" onclick="openCartModal('Earthing Coal')">🛒 <span data-i18n="add_to_cart">Add to Cart</span></button>
+          <button class="btn btn-outline" onclick="openCartModal('Earthing Coal')">📋 <span data-i18n="add_to_cart">Add to Enquiry</span></button>
         </div>
       </div>
       <div class="pcard">
@@ -959,7 +998,7 @@
         <a class="prod-link" href="earthing-coal-earthing-salt-guwahati/" data-i18n="view_details">View Details →</a>
         <div class="pcard-actions">
           <a class="btn btn-gold" href="https://wa.me/919435018204?text=Hello%2C%20what%20is%20today%27s%20price%20of%20Earthing%20Salt%3F" target="_blank" rel="noopener">💬 <span data-i18n="wa_price">WhatsApp Price</span></a>
-          <button class="btn btn-outline" onclick="openCartModal('Earthing Salt')">🛒 <span data-i18n="add_to_cart">Add to Cart</span></button>
+          <button class="btn btn-outline" onclick="openCartModal('Earthing Salt')">📋 <span data-i18n="add_to_cart">Add to Enquiry</span></button>
         </div>
       </div>
       <div class="pcard">
@@ -970,7 +1009,7 @@
         <a class="prod-link" href="hard-coke-dust-guwahati/" data-i18n="view_details">View Details →</a>
         <div class="pcard-actions">
           <a class="btn btn-gold" href="https://wa.me/919435018204?text=Hello%2C%20what%20is%20today%27s%20price%20of%20Hard%20Coke%20Dust%3F" target="_blank" rel="noopener">💬 <span data-i18n="wa_price">WhatsApp Price</span></a>
-          <button class="btn btn-outline" onclick="openCartModal('Hard Coke Dust')">🛒 <span data-i18n="add_to_cart">Add to Cart</span></button>
+          <button class="btn btn-outline" onclick="openCartModal('Hard Coke Dust')">📋 <span data-i18n="add_to_cart">Add to Enquiry</span></button>
         </div>
       </div>
     </div>
@@ -1002,41 +1041,42 @@
       <div class="rcard">
         <div class="stars">★★★★★</div>
         <p data-i18n="r1">Been buying coal from Anant Coal Depot for a while now and honestly one of the most reliable suppliers in Guwahati. Quality is consistent, pricing is fair, and delivery is prompt. The owners Tarachand and Anant are very helpful and straightforward to deal with. 35+ years in business and it shows.</p>
-        <div class="rname">Kartik Jain</div><div class="rsource">Google Maps · Verified Review</div>
-      </div>
-      <div class="rcard">
-        <div class="stars">★★★★★</div>
-        <p data-i18n="r2">Best coal depot with 30+ years of experience. Quality products, trustworthy service, and competitive pricing. Highly recommended for all coal purchasing needs.</p>
-        <div class="rname">Nancy Jain</div><div class="rsource">Google Maps · Verified</div>
+        <div class="rname">Kartik Jain</div><div class="rsource"><a href="https://maps.app.goo.gl/pH84QbjiQVN52hRXA" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Google Maps</a> · Verified Review</div>
       </div>
       <div class="rcard hidden-review">
         <div class="stars">★★★★★</div>
+        <p data-i18n="r2">Best coal depot with 30+ years of experience. Quality products, trustworthy service, and competitive pricing. Highly recommended for all coal purchasing needs.</p>
+        <div class="rname">Nancy Jain</div><div class="rsource"><a href="https://maps.app.goo.gl/pH84QbjiQVN52hRXA" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Google Maps</a> · Verified</div>
+      </div>
+      <div class="rcard">
+        <div class="stars">★★★★★</div>
         <p data-i18n="r3">Top notch quality with the best price and great service.</p>
-        <div class="rname">Subham Tiwari</div><div class="rsource">Google Maps · Verified</div>
+        <div class="rname">Subham Tiwari</div><div class="rsource"><a href="https://maps.app.goo.gl/pH84QbjiQVN52hRXA" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Google Maps</a> · Verified</div>
       </div>
       <div class="rcard hidden-review">
         <div class="stars">★★★★★</div>
         <p data-i18n="r4">Best place to buy coal in Guwahati. Service is also very good. Highly recommended.</p>
-        <div class="rname">Saahil Jain</div><div class="rsource">Google Maps · Verified</div>
+        <div class="rname">Saahil Jain</div><div class="rsource"><a href="https://maps.app.goo.gl/pH84QbjiQVN52hRXA" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Google Maps</a> · Verified</div>
       </div>
       <div class="rcard hidden-review">
         <div class="stars">★★★★★</div>
         <p data-i18n="r5">Best place to buy coal from. Reasonable rate, good service.</p>
-        <div class="rname">Shubham Jain</div><div class="rsource">Google Maps · Verified</div>
+        <div class="rname">Shubham Jain</div><div class="rsource"><a href="https://maps.app.goo.gl/pH84QbjiQVN52hRXA" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Google Maps</a> · Verified</div>
       </div>
       <div class="rcard hidden-review">
         <div class="stars">★★★★★</div>
         <p data-i18n="r6">Best place in Guwahati to buy coal.</p>
-        <div class="rname">Akshat Jain</div><div class="rsource">Google Maps · Verified</div>
+        <div class="rname">Akshat Jain</div><div class="rsource"><a href="https://maps.app.goo.gl/pH84QbjiQVN52hRXA" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Google Maps</a> · Verified</div>
       </div>
-      <div class="rcard hidden-review">
+      <div class="rcard">
         <div class="stars">★★★★★</div>
         <p data-i18n="r7">Best price & service.</p>
-        <div class="rname">Hemant Agarwal</div><div class="rsource">Google Maps · Verified</div>
+        <div class="rname">Hemant Agarwal</div><div class="rsource"><a href="https://maps.app.goo.gl/pH84QbjiQVN52hRXA" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Google Maps</a> · Verified</div>
       </div>
     </div>
     <div class="show-more-wrap">
       <button class="btn btn-outline" id="reviewToggle" data-i18n="show_more_reviews">Read More Reviews</button>
+      <a class="btn btn-gold" href="https://share.google/w0YScmBzXKHTJjNb8" target="_blank" rel="noopener" data-i18n="see_all_google" style="margin-left:10px;">See all reviews on Google ↗</a>
     </div>
   </div>
 </section>
@@ -1246,22 +1286,78 @@
 
 </main>
 <!-- FOOTER (single, redundant block removed) -->
-<footer>
-  <div class="wrap">
-    <div class="fbrand">Anant Coal Depot</div>
-    <p class="fslogan" style="font-family:'Fraunces',serif; font-style:italic; color:var(--gold-light); margin:6px 0 10px;">Solid coal. Solid reputation.</p>
-    <div class="fmeta">
-      Hard Coke · Charcoal · Steam Coal · Earthing Coal · Earthing Salt<br>
-      NH 37, Lalmati, Guwahati, Assam · 94350 18204 · 99574 39095 · GSTIN: 18AABHT9778F1ZI<br>Open Daily 8 AM - 8 PM · Hard Coke · Bulk & Retail · Pan India Delivery<br><a href="about/">About Us</a> · <a href="guides/">Coal Knowledge Centre</a> · <a href="guides/hard-coke-vs-steam-coal/">Hard Coke vs Steam Coal</a> · <a href="coal-delivery-assam-northeast/">Delivery: Assam &amp; Northeast</a> · <a href="coal-for-brick-kilns/">Brick Kilns</a> · <a href="coal-for-hotels-restaurants-dhabas/">Restaurants &amp; Dhabas</a>
+<!-- shared:footer -->
+<footer class="acdf">
+  <style>
+    .acdf{background:#17160F; color:#C9C4B8; padding:44px 0 0; font-size:13px;}
+    .acdf .acdf-wrap{max-width:1120px; margin:0 auto; padding:0 22px; display:grid; grid-template-columns:1.3fr 1fr 1fr 1.2fr; gap:32px;}
+    @media(max-width:820px){ .acdf .acdf-wrap{grid-template-columns:1fr 1fr;} }
+    @media(max-width:480px){ .acdf .acdf-wrap{grid-template-columns:1fr;} }
+    .acdf h4{color:#e6c968; font-size:11px; letter-spacing:.14em; text-transform:uppercase; margin:0 0 12px; font-weight:700;}
+    .acdf .acdf-brand{font-family:Georgia,'Fraunces',serif; font-size:17px; color:#fff; letter-spacing:.04em;}
+    .acdf .acdf-slogan{font-style:italic; color:#e6c968; margin:6px 0 10px; font-family:Georgia,serif;}
+    .acdf p{margin:0 0 8px; line-height:1.6;}
+    .acdf ul{list-style:none; margin:0; padding:0;}
+    .acdf li{margin:0 0 2px;}
+    .acdf a{color:#C9C4B8; text-decoration:none; display:inline-flex; align-items:center; min-height:38px; border-bottom:1px solid transparent;}
+    .acdf a:hover{color:#e6c968; border-bottom-color:#e6c968;}
+    .acdf .acdf-legal{border-top:1px solid #33301F; margin-top:36px; padding:16px 22px; text-align:center; font-size:11.5px; color:#8d886f;}
+  </style>
+  <div class="acdf-wrap">
+    <div>
+      <div class="acdf-brand">ANANT COAL DEPOT</div>
+      <div class="acdf-slogan">Solid coal. Solid reputation.</div>
+      <p>Family-run coal depot &amp; dealer in Guwahati since 1990. Bulk &amp; retail supply with pan India delivery.</p>
+      <p><a href="about/">About Us →</a></p>
+    </div>
+    <div>
+      <h4>Products</h4>
+      <ul>
+        <li><a href="hard-coke-guwahati/">Hard Coke</a></li>
+        <li><a href="hard-coke-dust-guwahati/">Hard Coke Dust</a></li>
+        <li><a href="charcoal-supplier-guwahati/">Charcoal (Lakdi Koyla)</a></li>
+        <li><a href="steam-coal-guwahati/">Steam Coal (Kacha Koyla)</a></li>
+        <li><a href="earthing-coal-earthing-salt-guwahati/">Earthing Coal &amp; Salt</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Information</h4>
+      <ul>
+        <li><a href="guides/">Coal Knowledge Centre</a></li>
+        <li><a href="coal-for-brick-kilns/">Coal for Brick Kilns</a></li>
+        <li><a href="coal-for-hotels-restaurants-dhabas/">Restaurants &amp; Dhabas</a></li>
+        <li><a href="coal-for-foundries-rolling-mills/">Foundries &amp; Rolling Mills</a></li>
+        <li><a href="coal-for-tea-gardens/">Tea Gardens</a></li>
+        <li><a href="coal-delivery-assam-northeast/">Delivery: Assam &amp; Northeast</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <p>Tarachand Jain · <a href="tel:+919435018204">94350 18204</a><br>
+      Anant Jain · <a href="tel:+919957439095">99574 39095</a></p>
+      <p>NH 37, Lalmati, Near Nidhi Bhawan,<br>Guwahati, Assam 781029</p>
+      <p>Open Daily 8 AM – 8 PM</p>
+      <p><a href="https://maps.app.goo.gl/pH84QbjiQVN52hRXA" target="_blank" rel="noopener">📍 Get Directions</a> · <a href="https://wa.me/919435018204" target="_blank" rel="noopener">💬 WhatsApp</a></p>
     </div>
   </div>
+  <div class="acdf-legal">GSTIN: 18AABHT9778F1ZI · © 2026 Anant Coal Depot · Est. 1990 · Bulk &amp; Retail · Pan India Delivery · <a href="">anantcoaldepot.in</a></div>
 </footer>
+<!-- /shared:footer -->
 
-<!-- MOBILE STICKY CTA -->
-<div class="mobile-cta">
-  <a class="btn btn-outline" href="https://wa.me/919435018204" target="_blank" rel="noopener">WhatsApp</a>
-  <a class="btn btn-gold" href="tel:+919435018204">Call Now</a>
+<!-- shared:stickybar -->
+<div class="acd-stickybar" role="navigation" aria-label="Quick contact">
+  <style>
+    body{padding-bottom:calc(66px + env(safe-area-inset-bottom, 0px));}
+    .acd-stickybar{position:fixed; left:0; right:0; bottom:0; z-index:70; display:flex; gap:1px; background:#33301F; padding-bottom:env(safe-area-inset-bottom, 0px); box-shadow:0 -4px 16px rgba(0,0,0,.18);}
+    .acd-stickybar a{flex:1; display:flex; align-items:center; justify-content:center; gap:8px; min-height:56px; font-size:14.5px; font-weight:700; letter-spacing:.02em; text-decoration:none;}
+    .acd-stickybar .sb-call{background:#17160F; color:#fff;}
+    .acd-stickybar .sb-wa{background:#C9A227; color:#17160F;}
+    @media(min-width:901px){ .acd-stickybar{display:none;} body{padding-bottom:0;} }
+  </style>
+  <a class="sb-call" href="tel:+919435018204" aria-label="Call Anant Coal Depot">📞 Call</a>
+  <a class="sb-wa" href="https://wa.me/919435018204" target="_blank" rel="noopener" aria-label="WhatsApp Anant Coal Depot">💬 WhatsApp</a>
 </div>
+<!-- /shared:stickybar -->
 
 <script>
 /* ---------------- CAROUSEL ---------------- */
@@ -1460,9 +1556,9 @@ function renderCart(){
   countEl.textContent = totalQty;
 
   if (cart.length === 0){
-    const emptyText = currentLang==='hi' ? 'आपकी कार्ट खाली है। एक ही संदेश में पूछताछ के लिए उत्पाद जोड़ें।'
-      : currentLang==='as' ? 'আপোনাৰ কাৰ্ট খালী। এটা বাৰ্তাত বিচাৰপুচৰ বাবে সামগ্ৰী যোগ কৰক।'
-      : 'Your cart is empty. Add products to enquire in one message.';
+    const emptyText = currentLang==='hi' ? 'आपकी पूछताछ सूची खाली है। एक ही संदेश में पूछताछ के लिए उत्पाद जोड़ें।'
+      : currentLang==='as' ? 'আপোনাৰ বিচাৰপুচ তালিকা খালী। এটা বাৰ্তাত বিচাৰপুচৰ বাবে সামগ্ৰী যোগ কৰক।'
+      : 'Your enquiry list is empty. Add products to enquire in one message.';
     wrap.innerHTML = `<div class="cart-empty">${emptyText}</div>`;
     return;
   }
@@ -1501,7 +1597,7 @@ function showErr(id, msg){
 }
 document.getElementById('cartWaBtn').addEventListener('click', ()=>{
   if (cart.length === 0){
-    showErr('cartErr', currentLang==='hi' ? 'कार्ट खाली है। पहले उत्पाद जोड़ें।' : currentLang==='as' ? 'কাৰ্ট খালী। প্ৰথমে সামগ্ৰী যোগ কৰক।' : 'Your cart is empty. Add a product first.');
+    showErr('cartErr', currentLang==='hi' ? 'पूछताछ सूची खाली है। पहले उत्पाद जोड़ें।' : currentLang==='as' ? 'বিচাৰপুচ তালিকা খালী। প্ৰথমে সামগ্ৰী যোগ কৰক।' : 'Your enquiry list is empty. Add products to enquire in one message.');
     return;
   }
 
@@ -1550,8 +1646,9 @@ function sendPriceEnquiry(){
 /* ---------------- LANGUAGE SWITCHING ---------------- */
 const translations = {
   en: {
+    nav_industries:"Industries", nav_ind_kilns:"Brick Kilns", nav_ind_rest:"Restaurants &amp; Dhabas", nav_ind_foundry:"Foundries &amp; Rolling Mills", nav_ind_tea:"Tea Gardens", nav_ind_delivery:"Delivery: Assam &amp; NE", hero_cta_wa:"💬 Get Today's Price on WhatsApp", router_h:"What do you need coal for?", router_rest:"Restaurant / Dhaba", router_kiln:"Brick Kiln", router_home:"Home Use", router_earth:"Earthing (Electricians)", router_ind:"Industry / Factory", see_all_google:"See all reviews on Google ↗",
     wa_price:"WhatsApp Price", open_now:"Open now · closes 8 PM", closed_now:"Opens 8 AM", rated_line:"5.0 ★ on Google Maps", gl_est:"Established", gl_loc:"Location", gl_hrs:"Hours", gl_hrs_v:"8 AM - 8 PM · All 7 days", gl_prod:"Products", gl_prod_v:"Hard Coke · Coke Dust · Charcoal · Steam Coal · Earthing Coal &amp; Salt", gl_sup:"Supply", gl_sup_v:"Bulk &amp; retail · Pan India delivery",
-    view_details:"View Details →", add_to_cart:"Add to Cart", hours_open:"Open Daily · 8 AM - 8 PM", addr_hours:"Open all 7 days · 8 AM to 8 PM",
+    view_details:"View Details →", add_to_cart:"Add to Enquiry", hours_open:"Open Daily · 8 AM - 8 PM", addr_hours:"Open all 7 days · 8 AM to 8 PM",
     entity_p:"Anant Coal Depot is a family-run coal supplier established in 1990 by Tarachand Jain, located at NH 37, Lalmati, Near Nidhi Bhawan, Guwahati, Assam 781029. Open 8 AM to 8 PM, all 7 days. Products: Hard Coke, Hard Coke Dust, Charcoal (Lakdi Koyla), Steam Coal (Kacha Koyla), Earthing Coal and Earthing Salt. Bulk and retail orders accepted. Pan India delivery. GSTIN 18AABHT9778F1ZI.",
     how_eyebrow:"Simple Process", how_h2:"How Ordering Works",
     how1_h:"Call or WhatsApp", how1_p:"Tell us the product, quantity and your delivery area.",
@@ -1612,7 +1709,7 @@ const translations = {
     faq9_q:"Which industries does Anant Coal Depot supply to?", faq9_a:"We supply coal to households, brick kilns (itta bhatta), aluminium utensil industries, factories, restaurants, dhabas, electricians (earthing coal and salt) and contractors across Guwahati and pan India. Whether you need retail quantities or bulk supply, we cater to all.",
     contact_eyebrow:"Get In Touch", contact_h2:"Order or enquire now", owner:"Owner", co_owner:"Co-Owner",
     addr_h:"Anant Coal Depot", addr_p:"NH 37, Lalmati, Near Nidhi Bhawan<br>Guwahati, Assam – 781029", open_maps:"Open in Maps →",
-    cart:"Cart", your_cart:"Your Cart", cart_empty:"Your cart is empty. Add products to enquire in one message.", send_cart_wa:"Send Enquiry on WhatsApp",
+    cart:"Enquiry List", your_cart:"Your Enquiry List", cart_empty:"Your enquiry list is empty. Add products to enquire in one message.", send_cart_wa:"Send Enquiry on WhatsApp",
     m_quantity:"Quantity", m_name:"Your Name *", m_name_ph:"Enter your full name", m_phone:"Phone Number *", m_phone_ph:"Your WhatsApp number",
     m_qty_req:"Quantity Required", m_address:"Delivery Address *", m_address_ph:"Enter your full delivery address including area, city, pincode",
     m_notes:"Additional Notes", m_notes_ph:"Any specific requirements (optional)", send_wa:"Send via WhatsApp",
@@ -1620,8 +1717,9 @@ const translations = {
     u_kg:"KG", u_quintal:"Quintal (100 KG)", u_tonne:"Tonne (1000 KG)", u_bag:"Bag", u_truck:"Truck Load", u_others:"Others"
   },
   hi: {
+    nav_industries:"उद्योग", nav_ind_kilns:"ईंट भट्ठा", nav_ind_rest:"रेस्टोरेंट और ढाबा", nav_ind_foundry:"फाउंड्री और रोलिंग मिल", nav_ind_tea:"चाय बागान", nav_ind_delivery:"डिलीवरी: असम और नॉर्थईस्ट", hero_cta_wa:"💬 WhatsApp पर आज का रेट पाएं", router_h:"आपको किस काम के लिए कोयला चाहिए?", router_rest:"रेस्टोरेंट / ढाबा", router_kiln:"ईंट भट्ठा", router_home:"घरेलू उपयोग", router_earth:"अर्थिंग (इलेक्ट्रीशियन)", router_ind:"उद्योग / फैक्ट्री", see_all_google:"Google पर सभी रिव्यू देखें ↗",
     wa_price:"WhatsApp पर मूल्य", open_now:"अभी खुला · रात 8 बजे तक", closed_now:"सुबह 8 बजे खुलेगा", rated_line:"Google Maps पर 5.0 ★", gl_est:"स्थापना", gl_loc:"स्थान", gl_hrs:"समय", gl_hrs_v:"सुबह 8 - रात 8 · सातों दिन", gl_prod:"उत्पाद", gl_prod_v:"हार्ड कोक · कोक डस्ट · लकड़ी कोयला · कच्चा कोयला · अर्थिंग कोयला व नमक", gl_sup:"आपूर्ति", gl_sup_v:"थोक व खुदरा · पूरे भारत में डिलीवरी",
-    view_details:"पूरी जानकारी →", add_to_cart:"कार्ट में जोड़ें", hours_open:"प्रतिदिन खुला · सुबह 8 - रात 8 बजे", addr_hours:"सातों दिन खुला · सुबह 8 से रात 8 बजे तक",
+    view_details:"पूरी जानकारी →", add_to_cart:"पूछताछ में जोड़ें", hours_open:"प्रतिदिन खुला · सुबह 8 - रात 8 बजे", addr_hours:"सातों दिन खुला · सुबह 8 से रात 8 बजे तक",
     entity_p:"अनंत कोल डिपो 1990 में तारचंद जैन द्वारा स्थापित एक पारिवारिक कोयला आपूर्तिकर्ता है, NH 37, लालमाटी, निधि भवन के पास, गुवाहाटी, असम 781029 में स्थित। सातों दिन सुबह 8 से रात 8 बजे तक खुला। उत्पाद: हार्ड कोक, हार्ड कोक डस्ट, लकड़ी कोयला, कच्चा कोयला (स्टीम कोल), अर्थिंग कोयला और अर्थिंग नमक। थोक और खुदरा ऑर्डर स्वीकार्य। पूरे भारत में डिलीवरी। GSTIN 18AABHT9778F1ZI.",
     how_eyebrow:"सरल प्रक्रिया", how_h2:"ऑर्डर कैसे होता है",
     how1_h:"कॉल या WhatsApp करें", how1_p:"हमें उत्पाद, मात्रा और डिलीवरी क्षेत्र बताएं।",
@@ -1682,7 +1780,7 @@ const translations = {
     faq9_q:"अनंत कोल डिपो किन उद्योगों को आपूर्ति करता है?", faq9_a:"हम घरों, ईंट भट्टों, एल्युमीनियम बर्तन उद्योगों, कारखानों, रेस्तरां, ढाबों, बिजली मिस्त्रियों (अर्थिंग कोयला और नमक) और ठेकेदारों को गुवाहाटी और पूरे भारत में कोयला आपूर्ति करते हैं। खुदरा या थोक, हम सभी की सेवा करते हैं।",
     contact_eyebrow:"संपर्क करें", contact_h2:"अभी ऑर्डर करें या पूछताछ करें", owner:"मालिक", co_owner:"सह-मालिक",
     addr_h:"अनंत कोल डिपो", addr_p:"एनएच 37, लालमाटी, निधि भवन के पास<br>गुवाहाटी, असम – 781029", open_maps:"मैप्स में खोलें →",
-    cart:"कार्ट", your_cart:"आपकी कार्ट", cart_empty:"आपकी कार्ट खाली है। एक ही संदेश में पूछताछ के लिए उत्पाद जोड़ें।", send_cart_wa:"व्हाट्सएप पर पूछताछ भेजें",
+    cart:"पूछताछ सूची", your_cart:"आपकी पूछताछ सूची", cart_empty:"आपकी पूछताछ सूची खाली है। एक ही संदेश में पूछताछ के लिए उत्पाद जोड़ें।", send_cart_wa:"व्हाट्सएप पर पूछताछ भेजें",
     m_quantity:"मात्रा", m_name:"आपका नाम *", m_name_ph:"अपना पूरा नाम दर्ज करें", m_phone:"फोन नंबर *", m_phone_ph:"आपका व्हाट्सएप नंबर",
     m_qty_req:"आवश्यक मात्रा", m_address:"डिलीवरी पता *", m_address_ph:"क्षेत्र, शहर, पिनकोड सहित अपना पूरा डिलीवरी पता दर्ज करें",
     m_notes:"अतिरिक्त टिप्पणी", m_notes_ph:"कोई विशेष आवश्यकता (वैकल्पिक)", send_wa:"व्हाट्सएप पर भेजें",
@@ -1690,8 +1788,9 @@ const translations = {
     u_kg:"किलोग्राम", u_quintal:"क्विंटल (100 किलो)", u_tonne:"टन (1000 किलो)", u_bag:"बैग", u_truck:"ट्रक लोड", u_others:"अन्य"
   },
   as: {
+    nav_industries:"উদ্যোগ", nav_ind_kilns:"ইটাভাটা", nav_ind_rest:"ৰেষ্টুৰেণ্ট আৰু ধাবা", nav_ind_foundry:"ফাউণ্ড্ৰী আৰু ৰলিং মিল", nav_ind_tea:"চাহ বাগিচা", nav_ind_delivery:"ডেলিভাৰী: অসম আৰু উত্তৰ-পূব", hero_cta_wa:"💬 WhatsApp-ত আজিৰ দাম জানক", router_h:"আপোনাক কিহৰ বাবে কয়লা লাগে?", router_rest:"ৰেষ্টুৰেণ্ট / ধাবা", router_kiln:"ইটাভাটা", router_home:"ঘৰুৱা ব্যৱহাৰ", router_earth:"আৰ্থিং (ইলেক্ট্ৰিচিয়ান)", router_ind:"উদ্যোগ / ফেক্টৰী", see_all_google:"Google-ত সকলো পৰ্যালোচনা চাওক ↗",
     wa_price:"WhatsAppত মূল্য", open_now:"এতিয়া খোলা · ৰাতি ৮ বজালৈ", closed_now:"ৰাতিপুৱা ৮ বজাত খুলিব", rated_line:"Google Mapsত 5.0 ★", gl_est:"প্ৰতিষ্ঠা", gl_loc:"স্থান", gl_hrs:"সময়", gl_hrs_v:"ৰাতিপুৱা ৮ - ৰাতি ৮ · ৭ দিনেই", gl_prod:"সামগ্ৰী", gl_prod_v:"হাৰ্ড কোক · কোক ডাষ্ট · কাঠকয়লা · কেঁচা কয়লা · আৰ্থিং কয়লা আৰু নিমখ", gl_sup:"যোগান", gl_sup_v:"পাইকাৰী আৰু খুচুৰা · সমগ্ৰ ভাৰতত ডেলিভাৰী",
-    view_details:"সবিশেষ চাওক →", add_to_cart:"কাৰ্টত যোগ কৰক", hours_open:"প্ৰতিদিনে খোলা · ৰাতিপুৱা ৮ - ৰাতি ৮", addr_hours:"সপ্তাহৰ ৭ দিনেই খোলা · ৰাতিপুৱা ৮ৰ পৰা ৰাতি ৮ বজালৈ",
+    view_details:"সবিশেষ চাওক →", add_to_cart:"বিচাৰপুচত যোগ কৰক", hours_open:"প্ৰতিদিনে খোলা · ৰাতিপুৱা ৮ - ৰাতি ৮", addr_hours:"সপ্তাহৰ ৭ দিনেই খোলা · ৰাতিপুৱা ৮ৰ পৰা ৰাতি ৮ বজালৈ",
     entity_p:"অনন্ত কয়লা ডিপো ১৯৯০ চনত তাৰাচান্দ জৈনৰ দ্বাৰা প্ৰতিষ্ঠিত এক পাৰিবাৰিক কয়লা যোগানদাতা, NH 37, লালমাটি, নিধি ভৱনৰ ওচৰত, গুৱাহাটী, অসম 781029 ত অৱস্থিত। সপ্তাহৰ ৭ দিনেই ৰাতিপুৱা ৮ বজাৰ পৰা ৰাতি ৮ বজালৈ খোলা। সামগ্ৰী: হাৰ্ড কোক, হাৰ্ড কোক ডাষ্ট, কাঠকয়লা, কেঁচা কয়লা (ষ্টীম কয়লা), আৰ্থিং কয়লা আৰু আৰ্থিং নিমখ। পাইকাৰী আৰু খুচুৰা অৰ্ডাৰ গ্ৰহণযোগ্য। সমগ্ৰ ভাৰতত ডেলিভাৰী। GSTIN 18AABHT9778F1ZI.",
     how_eyebrow:"সৰল প্ৰক্ৰিয়া", how_h2:"অৰ্ডাৰ কেনেকৈ হয়",
     how1_h:"কল বা WhatsApp কৰক", how1_p:"আমাক সামগ্ৰী, পৰিমাণ আৰু ডেলিভাৰীৰ ঠাই জনাওক।",
@@ -1752,7 +1851,7 @@ const translations = {
     faq9_q:"অনন্ত কয়লা ডিপোৱে কি উদ্যোগলৈ যোগান ধৰে?", faq9_a:"আমি ঘৰ, ইটাভাটা, এলুমিনিয়াম পাত্ৰ উদ্যোগ, কাৰখানা, ৰেস্তোৰাঁ, ঢাবা, বিদ্যুৎমিস্ত্ৰী (আৰ্থিং কয়লা আৰু নিমখ) আৰু ঠিকাদাৰসকলক গুৱাহাটী আৰু সমগ্ৰ ভাৰতত কয়লা যোগান ধৰোঁ। খুচুৰা বা পাইকাৰী, আমি সকলোকে সেৱা দিওঁ।",
     contact_eyebrow:"যোগাযোগ কৰক", contact_h2:"এতিয়াই অৰ্ডাৰ বা বিচাৰপুচ কৰক", owner:"মালিক", co_owner:"সহ-মালিক",
     addr_h:"অনন্ত কয়লা ডিপো", addr_p:"এনএইচ ৩৭, লালমাটি, নিধি ভৱনৰ ওচৰত<br>গুৱাহাটী, অসম – ৭৮১০২৯", open_maps:"মেপত খোলক →",
-    cart:"কাৰ্ট", your_cart:"আপোনাৰ কাৰ্ট", cart_empty:"আপোনাৰ কাৰ্ট খালী। এটা বাৰ্তাত বিচাৰপুচৰ বাবে সামগ্ৰী যোগ কৰক।", send_cart_wa:"হোৱাটছএপত বিচাৰপুচ পঠিয়াওক",
+    cart:"বিচাৰপুচ তালিকা", your_cart:"আপোনাৰ বিচাৰপুচ তালিকা", cart_empty:"আপোনাৰ বিচাৰপুচ তালিকা খালী। এটা বাৰ্তাত বিচাৰপুচৰ বাবে সামগ্ৰী যোগ কৰক।", send_cart_wa:"হোৱাটছএপত বিচাৰপুচ পঠিয়াওক",
     m_quantity:"পৰিমাণ", m_name:"আপোনাৰ নাম *", m_name_ph:"আপোনাৰ সম্পূৰ্ণ নাম দিয়ক", m_phone:"ফোন নম্বৰ *", m_phone_ph:"আপোনাৰ হোৱাটছএপ নম্বৰ",
     m_qty_req:"প্ৰয়োজনীয় পৰিমাণ", m_address:"ডেলিভাৰী ঠিকনা *", m_address_ph:"অঞ্চল, চহৰ, পিনকোডসহ আপোনাৰ সম্পূৰ্ণ ডেলিভাৰী ঠিকনা দিয়ক",
     m_notes:"অতিৰিক্ত টোকা", m_notes_ph:"যিকোনো নিৰ্দিষ্ট প্ৰয়োজনীয়তা (বৈকল্পিক)", send_wa:"হোৱাটছএপত পঠিয়াওক",
