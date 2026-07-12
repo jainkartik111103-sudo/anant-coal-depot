@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://anantcoaldepot.in/sitemap.xml
+
+# AI/LLM guidance: https://anantcoaldepot.in/llms.txt
