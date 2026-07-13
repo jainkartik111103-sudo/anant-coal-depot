@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow"><title>Customers — Anant Business</title>
+<script src="../db.js"></script>
+<style>
+:root{--coal:#17160F;--card:#232118;--card2:#2b2920;--gold:#C9A227;--gold-soft:#e6c968;--txt:#f0ede4;--dim:#a49d89;--line:#3c3929;--red:#e09090;--grn:#8fd19e;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:var(--coal);color:var(--txt);padding:calc(14px + env(safe-area-inset-top)) 0 calc(20px + env(safe-area-inset-bottom));}
+.wrap{max-width:640px;margin:0 auto;padding:0 14px;}
+.top a{color:var(--dim);font-size:13px;text-decoration:none;}
+h1{font-family:Georgia,serif;font-size:19px;color:var(--gold-soft);font-weight:600;margin:6px 0 10px;}
+input{width:100%;min-height:46px;padding:8px 12px;font-size:16px;color:var(--txt);background:var(--card2);border:1px solid var(--line);border-radius:10px;font-family:inherit;margin-bottom:10px;}
+.c{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;}
+.c .l1{display:flex;justify-content:space-between;font-weight:700;font-size:14.5px;}
+.c .l1 .v{color:var(--gold-soft);}
+.c .l2{color:var(--dim);font-size:12.5px;margin-top:3px;}
+.c .out{color:var(--red);font-weight:700;}
+.prof{display:none;} .prof.show{display:block;}
+.kv{display:flex;justify-content:space-between;padding:8px 2px;border-bottom:1px solid var(--line);font-size:13.5px;}
+.kv b{text-align:right;max-width:60%;}
+h3{font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin:16px 0 6px;}
+.hist{display:flex;justify-content:space-between;gap:8px;padding:9px 2px;border-bottom:1px solid var(--line);font-size:13px;}
+a.newinv{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:12px;background:var(--gold);color:var(--coal);font-weight:700;text-decoration:none;margin:14px 0 8px;}
+a.small{color:var(--gold-soft);text-decoration:none;font-size:13px;}
+.empty{color:var(--dim);text-align:center;padding:26px 10px;font-size:13.5px;line-height:1.6;}
+</style></head><body>
+<div class="wrap">
+  <div class="top"><a href="../">&#8249; Anant Business</a> <a href="#" id="back" class="small" style="float:right;display:none;">&#8249; All customers</a></div>
+  <h1>Customers</h1>
+  <div id="listV">
+    <input id="q" placeholder="Search name / phone / GSTIN" autocomplete="off">
+    <div id="list"></div>
+  </div>
+  <div class="prof" id="profV"></div>
+</div>
+<script>
+function $(i){return document.getElementById(i);}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function renderList(){
+  var q=($('q').value||'').toLowerCase();
+  var a=ADB.customers().filter(function(c){return !q||((c.name||'')+' '+(c.phone||'')+' '+(c.gstin||'')).toLowerCase().indexOf(q)>=0;});
+  var el=$('list');
+  if(!a.length){el.innerHTML='<div class="empty">No customers yet.<br>Every saved invoice builds this list automatically — no manual entry, ever.</div>';return;}
+  el.innerHTML='';
+  a.forEach(function(c){
+    var d=document.createElement('div');d.className='c';
+    d.innerHTML='<div class="l1"><span>'+esc(c.name)+'</span><span class="v">₹'+ADB.fmt(c.lifetime)+'</span></div>'
+      +'<div class="l2">'+esc(c.phone||'—')+' · '+c.count+' invoices · last '+ADB.dmy(c.last)
+      +(c.out>0?' · <span class="out">₹'+ADB.fmt(c.out)+' pending</span>':'')+'</div>';
+    d.addEventListener('click',function(){showProf(c);});
+    el.appendChild(d);
+  });
+}
+function showProf(c){
+  $('listV').style.display='none';$('back').style.display='inline';
+  var pv=$('profV');pv.className='prof show';
+  var beh=c.count?Math.round(100*c.paidN/c.count):0;
+  var prods=Object.keys(c.products).map(function(p){var x=c.products[p];return esc(p)+' ('+x.q+' '+x.u+' @ ₹'+ADB.fmt(x.r)+')';}).join('<br>')||'—';
+  pv.innerHTML='<div class="c"><div class="l1"><span>'+esc(c.name)+'</span><span class="v">₹'+ADB.fmt(c.lifetime)+'</span></div>'
+    +'<div class="l2">Customer since '+ADB.dmy(c.first)+'</div></div>'
+    +'<div class="kv"><span>Mobile</span><b>'+esc(c.phone||'—')+'</b></div>'
+    +'<div class="kv"><span>GSTIN</span><b>'+esc(c.gstin||'— (B2C)')+'</b></div>'
+    +'<div class="kv"><span>Address</span><b>'+esc(c.addr||'—')+'</b></div>'
+    +'<div class="kv"><span>Place of supply</span><b>'+esc(c.state)+'</b></div>'
+    +'<div class="kv"><span>Invoices</span><b>'+c.count+'</b></div>'
+    +'<div class="kv"><span>Outstanding</span><b style="color:'+(c.out>0?'var(--red)':'var(--grn)')+'">₹'+ADB.fmt(c.out)+'</b></div>'
+    +'<div class="kv"><span>Payment behaviour</span><b>'+beh+'% received</b></div>'
+    +'<div class="kv"><span>Recent vehicles</span><b>'+esc(c.vehicles.slice(0,3).join(', ')||'—')+'</b></div>'
+    +'<h3>Usual products (last rate)</h3><div style="font-size:13.5px;line-height:1.7;">'+prods+'</div>'
+    +'<a class="newinv" href="../invoice/?cust='+encodeURIComponent(c.name)+'">＋ New invoice for '+esc(c.name)+'</a>'
+    +'<h3>Invoice history</h3>'
+    +c.history.map(function(x){return '<div class="hist"><a class="small" href="../invoice/?load='+encodeURIComponent(x.no)+'">'+esc(x.no)+'</a><span>'+ADB.dmy(x.date)+'</span><b>₹'+ADB.fmt(x.gt)+'</b><span>'+(x.type!=='INV'?x.type:(x.paid?'✓':'⏳'))+'</span></div>';}).join('');
+}
+$('back').addEventListener('click',function(e){e.preventDefault();$('profV').className='prof';$('listV').style.display='';this.style.display='none';});
+$('q').addEventListener('input',renderList);
+renderList();
+if('serviceWorker' in navigator){try{navigator.serviceWorker.register('../sw.js');}catch(e){}}
+</script></body></html>

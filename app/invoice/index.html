@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Anant Invoice</title>
+<script src="../db.js"></script>
+<style>
+  :root{ --coal:#17160F; --card:#232118; --card2:#2b2920; --gold:#C9A227; --gold-soft:#e6c968;
+         --ink:#1a1a1a; --line:#3c3929; --txt:#f0ede4; --dim:#a49d89; --paper:#fff; --pline:#d9d4c8; }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  html{ -webkit-text-size-adjust:100%; }
+  body{ font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+        background:var(--coal); color:var(--txt);
+        padding:env(safe-area-inset-top) 0 calc(84px + env(safe-area-inset-bottom)); }
+  .top{ padding:18px 16px 6px; }
+  .top h1{ font-family:Georgia,serif; font-size:19px; letter-spacing:.04em; color:var(--gold-soft); font-weight:600;}
+  .top small{ color:var(--dim); font-size:12px; }
+  .noscript-banner{ background:#7a1f1f; color:#fff; padding:16px; font-size:15px; line-height:1.5; }
+
+  .seg{ margin:14px 12px 0; background:var(--card); border-radius:14px; overflow:hidden; }
+  .seg h2{ font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--gold);
+           padding:14px 16px 4px; font-weight:700; }
+  .row{ display:flex; flex-direction:column; padding:10px 16px; border-bottom:1px solid var(--line); }
+  .row:last-child{ border-bottom:none; }
+  label{ font-size:12.5px; color:var(--dim); margin-bottom:5px; }
+  input,select{ width:100%; min-height:48px; padding:10px 12px; font-size:17px; color:var(--txt);
+        background:var(--card2); border:1px solid var(--line); border-radius:10px; font-family:inherit; }
+  input:focus,select:focus{ outline:2px solid var(--gold); border-color:var(--gold); }
+  .pair{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .seg .toggle{ display:flex; gap:8px; }
+  .toggle button{ flex:1; min-height:48px; border-radius:10px; border:1px solid var(--line);
+        background:var(--card2); color:var(--dim); font-size:14px; font-family:inherit; }
+  .toggle button.on{ background:var(--gold); color:var(--coal); font-weight:700; border-color:var(--gold); }
+  .chk{ display:flex; align-items:center; gap:10px; min-height:48px; font-size:15px; color:var(--txt); }
+  .chk input{ width:22px; height:22px; min-height:0; accent-color:var(--gold); }
+  .hidden{ display:none !important; }
+
+  .item{ border-top:6px solid var(--coal); }
+  .item .amtline{ display:flex; justify-content:space-between; align-items:center; padding:12px 16px; }
+  .item .amtline b{ color:var(--gold-soft); font-size:17px; }
+  .del{ min-height:44px; padding:0 16px; background:none; border:1px solid #5a2020; color:#e09090;
+        border-radius:10px; font-size:14px; font-family:inherit; }
+  .addbtn{ margin:12px 16px 16px; min-height:50px; width:calc(100% - 32px); border-radius:12px;
+        border:1px dashed var(--gold); background:none; color:var(--gold-soft); font-size:16px; font-family:inherit; }
+  .hint{ font-size:12px; color:var(--dim); padding:10px 16px 14px; line-height:1.5; }
+  .hint strong{ color:var(--gold-soft); }
+
+  /* ---- fitted preview: never scrolls horizontally ---- */
+  .prevwrap{ margin:14px 12px; }
+  .prevhead{ display:flex; justify-content:space-between; align-items:baseline; padding:0 4px 8px; }
+  .prevhead span{ font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--gold); font-weight:700;}
+  .prevhead small{ color:var(--dim); font-size:11.5px; }
+  .fitbox.zoomed{overflow:auto;} .fitbox.zoomed .fitinner{transform:none !important; height:auto !important;}
+  .fitbox{ width:100%; overflow:hidden; border-radius:12px; background:#0d0c08; padding:10px; }
+  .fitinner{ transform-origin:top left; }
+  .sheet{ width:794px; background:var(--paper); color:var(--ink); padding:32px 36px;
+          font-size:12.3px; line-height:1.45; font-family:-apple-system,"Segoe UI",Roboto,sans-serif; }
+
+  /* sheet internals (print-real) */
+  .copytype{text-align:right; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:#8a8471;}
+  .ih{display:flex; justify-content:space-between; border-bottom:3px solid var(--coal); padding-bottom:12px;}
+  .ih h3{font-family:Georgia,serif; font-size:21px; letter-spacing:.06em; color:var(--coal);}
+  .ih .rule{width:52px; height:3px; background:var(--gold); margin:5px 0 7px;}
+  .ih p{color:#444; font-size:11px;}
+  .im{text-align:right; font-size:11px;}
+  .im .t{font-size:14px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;}
+  .im div{margin-top:3px;}
+  .pt{display:grid; grid-template-columns:1fr 1fr; gap:20px; padding:11px 0; border-bottom:1px solid var(--pline);}
+  .pt h4{font-size:9.5px; text-transform:uppercase; letter-spacing:.12em; color:#8a8471; margin-bottom:3px;}
+  .pt .nm{font-weight:700; font-size:12.5px;}
+  .tr{display:flex; flex-wrap:wrap; gap:4px 22px; padding:8px 0; border-bottom:1px solid var(--pline); font-size:10.8px; color:#333;}
+  .tr b{color:var(--ink);}
+  table.iv{width:100%; border-collapse:collapse; margin-top:11px;}
+  table.iv th{background:var(--coal); color:#fff; font-size:10px; text-transform:uppercase; padding:6px 8px; text-align:left;}
+  table.iv th.r, table.iv td.r{text-align:right;}
+  table.iv td{padding:6px 8px; border-bottom:1px solid var(--pline); font-size:11.8px;}
+  .ib{display:flex; gap:22px; margin-top:10px; align-items:flex-start;}
+  .il{flex:1; font-size:10.8px; color:#444;}
+  .il .bank{border:1px solid var(--pline); border-radius:4px; padding:8px 10px; margin-top:8px;}
+  .il .bank b{color:var(--ink);}
+  .it{width:280px; font-size:11.8px;}
+  .it div{display:flex; justify-content:space-between; padding:3px 0;}
+  .it .g{border-top:2px solid var(--coal); margin-top:5px; padding-top:6px; font-weight:800; font-size:14px;}
+  .it .rcm{color:#8a5a00; font-size:10.5px;}
+  .wd{margin-top:9px; font-size:11px;}
+  .if{display:flex; justify-content:space-between; gap:24px; margin-top:18px; padding-top:10px; border-top:1px solid var(--pline); font-size:10.5px; color:#555;}
+  .sg{text-align:right;} .sg .sp{height:42px;} .sg .ln{border-top:1px solid #999; padding-top:4px;}
+  .tm{margin-top:12px; font-size:9px; color:#8a8471; border-top:1px solid var(--pline); padding-top:7px;}
+  .gb{height:5px; background:linear-gradient(90deg,var(--gold),var(--gold-soft)); margin-top:16px;}
+
+  /* sticky in-tool action bar */
+  .bar{ position:fixed; left:0; right:0; bottom:0; z-index:50; display:flex; gap:1px; background:var(--line);
+        padding-bottom:env(safe-area-inset-bottom); box-shadow:0 -6px 20px rgba(0,0,0,.35); }
+  .bar button{ flex:1; min-height:58px; border:none; font-size:16px; font-weight:700; font-family:inherit; }
+  .bar .b-share{ background:var(--gold); color:var(--coal); }
+  .bar .b-new{ background:var(--card); color:var(--txt); }
+
+  details.adv{ margin:14px 12px; background:var(--card); border-radius:14px; }
+  details.adv summary{ list-style:none; min-height:52px; display:flex; align-items:center; justify-content:space-between;
+        padding:0 16px; font-size:14px; color:var(--dim); }
+  details.adv summary::-webkit-details-marker{display:none;}
+  details.adv summary::after{content:"▾";}
+  details.adv[open] summary::after{content:"▴";}
+  textarea{ width:100%; min-height:110px; background:var(--card2); color:var(--txt); border:1px solid var(--line);
+        border-radius:10px; padding:10px; font-size:13px; font-family:ui-monospace,Menlo,monospace; }
+  .btn2{ min-height:46px; padding:0 16px; border-radius:10px; border:1px solid var(--line); background:var(--card2);
+        color:var(--txt); font-size:14px; font-family:inherit; margin:8px 8px 0 0; }
+  .ver{ text-align:center; color:#6d6754; font-size:11px; padding:18px 0 6px; }
+
+  @media(min-width:720px){ /* desktop is the adaptation */
+    .seg,.prevwrap,details.adv{ max-width:680px; margin-left:auto; margin-right:auto; }
+    .top{ max-width:680px; margin:0 auto; }
+  }
+  @media print{
+    body{ background:#fff; padding:0; }
+    body > *:not(.prevwrap){ display:none !important; }
+    .prevwrap{ margin:0; }
+    .prevhead{ display:none; }
+    .fitbox{ padding:0; background:none; border-radius:0; overflow:visible; }
+    .fitinner{ transform:none !important; height:auto !important; }
+    .sheet{ width:auto; padding:0; }
+    @page{ size:A4; margin:13mm; }
+  }
+</style>
+</head>
+<body>
+<noscript><div class="noscript-banner"><b>This tool needs Safari.</b><br>You are previewing the file (buttons won't work here). Tap the Share icon → "Open in Safari", then use it there. Tip: in Safari tap Share → "Add to Home Screen" once — after that it opens like an app.</div></noscript>
+
+<div class="top">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <a href="../" style="color:#a49d89;font-size:13px;text-decoration:none;">‹ Anant Business</a>
+    <span>
+      <button id="navPrev" type="button" style="min-height:36px;min-width:44px;border-radius:9px;border:1px solid var(--line);background:var(--card2);color:var(--txt);font-size:15px;">‹</button>
+      <a href="../register/" style="display:inline-block;color:#e6c968;font-size:12.5px;text-decoration:none;border:1px solid var(--line);border-radius:9px;padding:9px 12px;background:var(--card2);">🕘 Previous invoices</a>
+      <button id="navNext" type="button" style="min-height:36px;min-width:44px;border-radius:9px;border:1px solid var(--line);background:var(--card2);color:var(--txt);font-size:15px;">›</button>
+    </span>
+  </div>
+  <h1>ANANT INVOICE</h1>
+  <small>Fill → Share PDF on WhatsApp · works offline · printing only when needed</small>
+</div>
+
+<div class="seg">
+  <h2>Customer</h2>
+  <div class="row" style="position:relative;"><label>Name *</label><input id="cName" autocomplete="off">
+    <div id="sug" class="hidden" style="position:absolute;left:12px;right:12px;top:100%;z-index:40;background:var(--card2);border:1px solid var(--gold);border-radius:10px;max-height:220px;overflow:auto;"></div>
+    <div id="lastChip" class="hidden" style="margin-top:8px;"><button type="button" id="loadLast" style="min-height:40px;padding:0 14px;border-radius:18px;border:1px solid var(--gold);background:none;color:var(--gold-soft);font-size:13px;">↺ Load last order</button></div></div>
+  <div class="row"><div class="pair">
+    <div><label>Phone</label><input id="cPhone" inputmode="tel"></div>
+    <div><label>GSTIN (optional)</label><input id="cGst" autocapitalize="characters"></div>
+  </div></div>
+  <div class="row"><label>Address</label><input id="cAddr"></div>
+  <div class="row"><label class="chk"><input type="checkbox" id="shipDiff"> Ship to a different address</label></div>
+  <div class="row hidden" id="shipRows">
+    <div class="pair"><div><label>Consignee name</label><input id="shName"></div><div><label>Consignee GSTIN</label><input id="shGst" autocapitalize="characters"></div></div>
+    <div style="margin-top:10px"><label>Consignee address</label><input id="shAddr"></div>
+  </div>
+</div>
+
+<div class="seg">
+  <h2>Supply</h2>
+  <div class="row"><label>Place of supply</label>
+    <div class="toggle"><button id="tIn" class="on" type="button">Within Assam</button><button id="tOut" type="button">Outside Assam (IGST)</button></div>
+  </div>
+  <div class="row hidden" id="stateRow"><label>Destination state</label><input id="cState" placeholder="e.g. Meghalaya"></div>
+  <div class="row"><div class="pair">
+    <div><label>Document</label><select id="cType"><option value="INV">Tax Invoice</option><option value="CRN">Credit Note</option><option value="DBN">Debit Note</option></select></div>
+    <div><label>Payment</label><div class="toggle"><button id="payP" class="on" type="button">Pending</button><button id="payR" type="button">Received</button></div></div>
+  </div></div>
+  <div class="row"><div class="pair">
+    <div><label>Vehicle no.</label><input id="cVeh" autocapitalize="characters"></div>
+    <div><label>Transport / mode</label><input id="cTrans" placeholder="Tempo / By road"></div>
+  </div></div>
+  <div class="row"><div class="pair">
+    <div><label>Date of supply</label><input id="cDos" type="date"></div>
+    <div><label>Reverse charge</label><div class="toggle"><button id="rcNo" class="on" type="button">No</button><button id="rcYes" type="button">Yes</button></div></div>
+  </div></div>
+</div>
+
+<div class="seg">
+  <h2>Items</h2>
+  <div id="items"></div>
+  <button class="addbtn" type="button" id="addItemBtn">＋ Add item</button>
+  <p class="hint"><strong>HSN defaults from your invoice book</strong> (Hard Coke 27040030, Dust 27040090). Confirm the others once with your accountant. Everything stays editable.</p>
+</div>
+
+<div class="prevwrap">
+  <div class="prevhead"><span>Invoice preview</span><button id="zoomBtn" type="button" style="min-height:36px;padding:0 14px;border-radius:9px;border:1px solid var(--line);background:var(--card2);color:var(--txt);font-size:13px;font-family:inherit;">Zoom</button></div>
+  <div class="fitbox"><div class="fitinner" id="fitinner">
+    <div class="sheet" id="sheet">
+      <div class="copytype" id="pCopy">Original for Recipient</div>
+      <div class="ih">
+        <div><h3>ANANT COAL DEPOT</h3><div class="rule"></div>
+          <p>N.H. 37, Near Nidhi Bhawan, Lalmati, Beltola, Guwahati – 781029 (Assam)<br>
+          Ph: 94350 18204 · 99574 39095 · State: Assam · Code: 18<br><b>GSTIN: 18AABHT9778F1ZI</b></p></div>
+        <div class="im"><div class="t" id="pDocType">Tax Invoice</div>
+          <div>Invoice No: <b id="pInvNo"></b></div><div>Date: <b id="pDate"></b></div>
+          <div>Reverse charge: <b id="pRC">No</b></div></div>
+      </div>
+      <div class="pt">
+        <div><h4>Details of Receiver / Billed to</h4><div class="nm" id="pName">—</div><div id="pAddr"></div><div id="pPhone"></div><div id="pGst"></div></div>
+        <div><h4>Details of Consignee / Shipped to</h4><div class="nm" id="pShName">Same as receiver</div><div id="pShAddr"></div><div id="pShGst"></div></div>
+      </div>
+      <div class="tr"><span>Place of supply: <b id="pSupply">Assam (18)</b></span>
+        <span id="pTransRow" class="hidden">Transport: <b id="pTrans"></b></span>
+        <span id="pVehRow" class="hidden">Vehicle: <b id="pVeh"></b></span>
+        <span id="pDosRow" class="hidden">Date of supply: <b id="pDos"></b></span></div>
+      <table class="iv"><thead><tr><th style="width:24px">#</th><th>Description of Goods</th><th>HSN</th><th class="r">Qty</th><th>Unit</th><th class="r">Rate ₹</th><th class="r">GST %</th><th class="r">Amount ₹</th></tr></thead><tbody id="pRows"></tbody></table>
+      <div class="ib">
+        <div class="il"><b>Terms of Sale:</b> All subject to Guwahati jurisdiction. Goods once sold will not be taken back. E.&amp;O.E.
+          <div class="bank"><b>Bank details</b><br><span>Axis Bank, Rehabari · A/c 919020029612841 · IFSC UTIB0003097</span><br><span id="pUpi"></span></div></div>
+        <div class="it" id="pTotals"></div>
+      </div>
+      <div class="wd">Rupees in words: <b id="pWords">—</b></div>
+      <div class="if"><div>Common Seal</div><div class="sg"><div class="sp" id="pSigSp"></div><div class="ln" id="pSigLn">For Anant Coal Depot — Authorised Signatory</div></div></div>
+      <div class="tm">This is a computer-generated invoice. GSTIN 18AABHT9778F1ZI · anantcoaldepot.in</div>
+      <div class="gb"></div>
+    </div>
+  </div></div>
+</div>
+
+<details class="adv">
+  <summary>Settings, series &amp; backup</summary>
+  <div class="row"><div class="pair">
+    <div><label>Invoice prefix (series)</label><input id="sPrefix" value="ACD/TI/2026/27/"></div>
+    <div><label>Next invoice no.</label><input id="sNext" type="number" inputmode="numeric" min="1" value="93"></div>
+  </div></div>
+  <div class="row"><div class="pair">
+    <div><label>UPI ID</label><input id="sUpi" placeholder="jaintarachand85-1@okaxis"></div>
+    <div><label>Signature</label><select id="sSig"><option value="p">Physical (sign after print)</option><option value="d">Digitally issued (printed name)</option></select></div>
+  </div></div>
+  <div class="row"><div class="pair">
+    <div><label>Copy type</label><select id="sCopy"><option>Original for Recipient</option><option>Duplicate for Transporter</option><option>Triplicate for Supplier</option></select></div>
+  </div></div>
+  <div class="row">
+    <label>Backup (copy &amp; save this text; paste + Import to restore on a new phone)</label>
+    <textarea id="bak" spellcheck="false"></textarea>
+    <div><button class="btn2" type="button" id="bakMake">Create backup text</button><button class="btn2" type="button" id="bakLoad">Import from text</button></div>
+  </div>
+  <p class="hint"><strong>Rules:</strong> only ONE phone issues invoices (this keeps GST numbering sequential). If a second phone must ever invoice, give it its own series prefix (e.g. ACD/TI/A/2026/27/). If this phone is lost, the last used number is always visible on your last invoice and in the order log — set "Next invoice no." accordingly on the new phone.</p>
+</details>
+<div class="ver">Anant Invoice v3.0 · data never leaves this phone</div>
+
+<div class="bar">
+  <button class="b-new" type="button" id="btnNew">＋ New</button>
+  <button class="b-new" type="button" id="btnSave" style="background:#33301F;color:#e6c968;">💾 Save</button>
+  <button class="b-share" type="button" id="btnShare">Send ▸</button>
+</div>
+<div id="sheetMenu" class="hidden" style="position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--card);border-top:1px solid var(--line);padding:14px 14px calc(14px + env(safe-area-inset-bottom));">
+  <div style="display:grid;gap:8px;">
+    <button class="addbtn" style="margin:0;width:100%;border-style:solid;background:var(--gold);color:var(--coal);font-weight:700;" type="button" id="mWa">💬 Open WhatsApp chat (message ready)</button>
+    <button class="addbtn" style="margin:0;width:100%;border-style:solid;" type="button" id="mPdf">🧾 Save / Print PDF (attach in WhatsApp)</button>
+    <button class="addbtn" style="margin:0;width:100%;" type="button" id="mDup">⧉ Duplicate as new invoice</button>
+    <button class="addbtn" style="margin:0;width:100%;border-color:#5a2020;color:#e09090;" type="button" id="mDel">🗑 Delete this invoice</button>
+    <button class="addbtn" style="margin:0;width:100%;" type="button" id="mClose">Close</button>
+  </div>
+</div>
+<div id="toast" style="position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(90px);background:var(--gold);color:var(--coal);font-weight:700;padding:11px 20px;border-radius:22px;transition:transform .2s;z-index:70;">Saved ✓</div>
+
+<script>
+var APP_VERSION="4.0";
+var store={ get:function(k,d){try{var v=localStorage.getItem('acd3_'+k);return v===null?d:v;}catch(e){return d;}},
+            set:function(k,v){try{localStorage.setItem('acd3_'+k,v);}catch(e){}} };
+var PRODUCTS=[{n:'Hard Coke',hsn:'27040030'},{n:'Hard Coke Dust',hsn:'27040090'},
+  {n:'Charcoal (Lakdi Koyla)',hsn:'44029010'},{n:'Steam Coal (Kacha Koyla)',hsn:'27011920'},
+  {n:'Earthing Coal',hsn:'27011920'},{n:'Earthing Salt',hsn:'25010010'},{n:'Other',hsn:''}];
+var UNITS=['Tonne','Quintal','KG','Bag','Truck'];
+var withinAssam=true, rc=false;
+function $(id){return document.getElementById(id);}
+function num(v){var n=parseFloat(v);return isNaN(n)?0:n;}
+function fmt(n){return n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function addItem(){
+  var d=document.createElement('div'); d.className='item';
+  d.innerHTML=
+   '<div class="row"><label>Product</label><select class="iProd">'+PRODUCTS.map(function(p){return '<option data-hsn="'+p.hsn+'">'+p.n+'</option>';}).join('')+'</select></div>'
+  +'<div class="row"><div class="pair"><div><label>Qty</label><input class="iQty" type="number" inputmode="decimal" min="0" step="any" value="1"></div>'
+  +'<div><label>Unit</label><select class="iUnit">'+UNITS.map(function(u){return '<option>'+u+'</option>';}).join('')+'</select></div></div></div>'
+  +'<div class="row"><div class="pair"><div><label>Rate ₹ / unit</label><input class="iRate" type="number" inputmode="decimal" min="0" step="any"></div>'
+  +'<div><label>GST %</label><input class="iGst" type="number" inputmode="decimal" min="0" step="any" value="5"></div></div></div>'
+  +'<div class="row"><div class="pair"><div><label>HSN</label><input class="iHsn" value="27040030" inputmode="numeric"></div><div><label>Cess ₹ (total, if any)</label><input class="iCess" type="number" inputmode="decimal" min="0" step="any" value="0"></div></div></div>'
+  +'<div class="amtline"><button class="del" type="button">Remove</button><b class="iAmt">₹0.00</b></div>';
+  d.querySelector('.iProd').addEventListener('change',function(){ d.querySelector('.iHsn').value=this.options[this.selectedIndex].getAttribute('data-hsn'); render(); });
+  d.querySelector('.del').addEventListener('click',function(){ d.remove(); render(); });
+  d.addEventListener('input',render);
+  $('items').appendChild(d); render();
+}
+
+var ONES=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+var TENS=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+function two(n){return n<20?ONES[n]:(TENS[Math.floor(n/10)]+(n%10?' '+ONES[n%10]:''));}
+function three(n){var h=Math.floor(n/100),r=n%100;return (h?ONES[h]+' Hundred'+(r?' ':''):'')+(r?two(r):'');}
+function inWords(n){ if(n===0)return 'Zero'; var s='',cr=Math.floor(n/1e7);n%=1e7;var lk=Math.floor(n/1e5);n%=1e5;var th=Math.floor(n/1e3);n%=1e3;
+  if(cr)s+=three(cr)+' Crore '; if(lk)s+=three(lk)+' Lakh '; if(th)s+=three(th)+' Thousand '; if(n)s+=three(n); return s.trim(); }
+
+function fit(){
+  var box=document.querySelector('.fitbox'), inner=$('fitinner'), sheet=$('sheet');
+  var w=box.clientWidth-20, sc=Math.min(1, w/794);
+  inner.style.transform='scale('+sc+')';
+  inner.style.height=(sheet.offsetHeight*sc)+'px';
+}
+window.addEventListener('resize',fit);
+
+function render(){
+  var rows='',taxable=0,gstAmt=0,cessAmt=0;
+  document.querySelectorAll('#items .item').forEach(function(it,i){
+    var qty=num(it.querySelector('.iQty').value), rate=num(it.querySelector('.iRate').value), gstP=num(it.querySelector('.iGst').value);
+    var cs=num(it.querySelector('.iCess').value);
+    var amt=qty*rate; taxable+=amt; gstAmt+=amt*gstP/100; cessAmt+=cs;
+    it.querySelector('.iAmt').textContent='₹'+fmt(amt);
+    if(qty>0||rate>0) rows+='<tr><td>'+(i+1)+'</td><td>'+esc(it.querySelector('.iProd').value)+'</td><td>'+esc(it.querySelector('.iHsn').value)+'</td><td class="r">'+qty+'</td><td>'+esc(it.querySelector('.iUnit').value)+'</td><td class="r">'+fmt(rate)+'</td><td class="r">'+gstP+'%</td><td class="r">'+fmt(amt)+'</td></tr>';
+  });
+  $('pRows').innerHTML=rows||'<tr><td colspan="8" style="color:#999">No items yet</td></tr>';
+  var t='<div><span>Total before tax</span><span>₹'+fmt(taxable)+'</span></div>';
+  if(rc){ t+='<div class="rcm"><span>GST payable on reverse charge (by recipient)</span><span>₹'+fmt(gstAmt)+'</span></div>'; gstAmt=0; }
+  else if(withinAssam){ t+='<div><span>Add: CGST</span><span>₹'+fmt(gstAmt/2)+'</span></div><div><span>Add: SGST</span><span>₹'+fmt(gstAmt/2)+'</span></div>'; }
+  else { t+='<div><span>Add: IGST</span><span>₹'+fmt(gstAmt)+'</span></div>'; }
+  if(!rc&&cessAmt>0) t+='<div><span>Compensation cess</span><span>₹'+fmt(cessAmt)+'</span></div>';
+  var raw=taxable+gstAmt+(rc?0:cessAmt), grand=Math.round(raw), roff=grand-raw;
+  if(Math.abs(roff)>=0.005) t+='<div><span>Round off</span><span>'+(roff>0?'+':'−')+'₹'+fmt(Math.abs(roff))+'</span></div>';
+  t+='<div class="g"><span>Total after tax</span><span>₹'+fmt(grand)+'</span></div>';
+  $('pTotals').innerHTML=t;
+  $('pWords').textContent=inWords(grand)+' Only';
+  $('pCopy').textContent=$('sCopy').value;
+  $('pInvNo').textContent=$('sPrefix').value+$('sNext').value;
+  $('pRC').textContent=rc?'Yes':'No';
+  $('pName').textContent=$('cName').value||'—';
+  $('pAddr').textContent=$('cAddr').value;
+  $('pPhone').textContent=$('cPhone').value?'Ph: '+$('cPhone').value:'';
+  $('pGst').textContent=$('cGst').value?'GSTIN: '+$('cGst').value.toUpperCase():'';
+  var ship=$('shipDiff').checked;
+  $('shipRows').classList.toggle('hidden',!ship);
+  $('pShName').textContent=ship?($('shName').value||'—'):'Same as receiver';
+  $('pShAddr').textContent=ship?$('shAddr').value:'';
+  $('pShGst').textContent=(ship&&$('shGst').value)?'GSTIN: '+$('shGst').value.toUpperCase():'';
+  $('stateRow').classList.toggle('hidden',withinAssam);
+  $('pSupply').textContent=withinAssam?'Assam (18)':($('cState').value||'Other state')+' (IGST)';
+  $('pDocType').textContent=$('cType').value==='CRN'?'Credit Note':$('cType').value==='DBN'?'Debit Note':($('cGst').value?'Tax Invoice':'Invoice');
+  [['Trans','cTrans'],['Veh','cVeh'],['Dos','cDos']].forEach(function(kv){
+    var v=$(kv[1]).value; $('p'+kv[0]+'Row').classList.toggle('hidden',!v);
+    $('p'+kv[0]).textContent=(kv[0]==='Veh')?v.toUpperCase():(kv[0]==='Dos'&&v?v.split('-').reverse().join('/'):v);
+  });
+  $('pUpi').textContent=$('sUpi').value?'UPI: '+$('sUpi').value:'';
+  var dg=$('sSig').value==='d';
+  $('pSigSp').style.height=dg?'14px':'42px';
+  $('pSigLn').innerHTML=dg?'<b>Tarachand Jain</b><br>For Anant Coal Depot — Authorised Signatory (digitally issued)':'For Anant Coal Depot — Authorised Signatory';
+  store.set('sig',$('sSig').value);
+  store.set('prefix',$('sPrefix').value); store.set('next',$('sNext').value); store.set('upi',$('sUpi').value);
+  fit();
+}
+
+function newInvoice(){
+  $('sNext').value=parseInt($('sNext').value||'1',10)+1;
+  ['cName','cPhone','cAddr','cGst','cTrans','cVeh','cDos','cState','shName','shAddr','shGst'].forEach(function(id){$(id).value='';});
+  $('shipDiff').checked=false; $('items').innerHTML=''; addItem();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* backup / restore */
+function makeBackup(){
+  var d={v:APP_VERSION,prefix:$('sPrefix').value,next:$('sNext').value,upi:$('sUpi').value,date:new Date().toISOString().slice(0,10)};
+  $('bak').value=JSON.stringify(d);
+  $('bak').select();
+}
+function loadBackup(){
+  try{ var d=JSON.parse($('bak').value);
+    if(d.prefix)$('sPrefix').value=d.prefix; if(d.next)$('sNext').value=d.next; if(d.upi)$('sUpi').value=d.upi;
+    render(); alert('Imported. Next invoice: '+$('sPrefix').value+$('sNext').value);
+  }catch(e){ alert('Could not read backup text.'); }
+}
+
+/* wiring */
+$('tIn').addEventListener('click',function(){withinAssam=true; this.className='on'; $('tOut').className=''; render();});
+$('tOut').addEventListener('click',function(){withinAssam=false; this.className='on'; $('tIn').className=''; render();});
+$('rcNo').addEventListener('click',function(){rc=false; this.className='on'; $('rcYes').className=''; render();});
+$('payP').addEventListener('click',function(){this.className='on';$('payR').className='';});
+$('payR').addEventListener('click',function(){this.className='on';$('payP').className='';});
+$('rcYes').addEventListener('click',function(){rc=true; this.className='on'; $('rcNo').className=''; render();});
+$('shipDiff').addEventListener('change',render);
+$('addItemBtn').addEventListener('click',addItem);
+$('btnNew').addEventListener('click',newInvoice);
+function collectTxn(){
+  var items=[]; document.querySelectorAll('#items .item').forEach(function(it){
+    items.push({p:it.querySelector('.iProd').value, hsn:it.querySelector('.iHsn').value,
+      q:num(it.querySelector('.iQty').value), u:it.querySelector('.iUnit').value,
+      r:num(it.querySelector('.iRate').value), g:num(it.querySelector('.iGst').value),
+      c:num(it.querySelector('.iCess').value)});});
+  var t={no:$('sPrefix').value+$('sNext').value, date:new Date().toISOString().slice(0,10),
+    type:$('cType').value, name:$('cName').value, phone:$('cPhone').value, gstin:($('cGst').value||'').toUpperCase(),
+    addr:$('cAddr').value, pos:withinAssam?'AS':'OTH', state:withinAssam?'Assam':($('cState').value||'Other'),
+    veh:($('cVeh').value||'').toUpperCase(), trans:$('cTrans').value, dos:$('cDos').value, rc:rc,
+    upi:$('sUpi').value, sig:$('sSig').value, paid:$('payR').className==='on', items:items};
+  var c=ADB.compute(t); t.tv=c.tv; t.cg=c.cg; t.sg=c.sg; t.ig=c.ig; t.cess=c.cess; t.gt=c.gt;
+  return t;
+}
+var savedNo=null, lastCust=null;
+function toast(m){var x=$('toast');x.textContent=m;x.style.transform='translateX(-50%) translateY(0)';setTimeout(function(){x.style.transform='translateX(-50%) translateY(90px)';},1500);}
+function doSave(silent){
+  render(); var t=collectTxn();
+  if(!t.name){ if(!silent)toast('Enter customer name'); return null; }
+  if(!(t.gt>0)){ if(!silent)toast('Add item with rate'); return null; }
+  if(!ADB.put(t)){ alert('Storage full — export backup from Register, then archive.'); return null; }
+  savedNo=t.no; try{localStorage.removeItem('acdb_draft');}catch(e){}
+  if(!silent)toast('Saved '+t.no+' ✓');
+  return t;
+}
+$('btnSave').addEventListener('click',function(){doSave(false);});
+$('btnShare').addEventListener('click',function(){ var t=doSave(true); if(!t)return doSave(false); toast('Saved '+t.no+' ✓'); $('sheetMenu').classList.remove('hidden'); });
+$('mClose').addEventListener('click',function(){$('sheetMenu').classList.add('hidden');});
+$('mPdf').addEventListener('click',function(){$('sheetMenu').classList.add('hidden');render();window.print();});
+$('mWa').addEventListener('click',function(){
+  $('sheetMenu').classList.add('hidden');
+  var t=ADB.get(savedNo)||collectTxn();
+  var ph=(t.phone||'').replace(/[^0-9]/g,''); if(ph.length===10)ph='91'+ph;
+  var msg='Namaste 🙏 '+(t.type==='CRN'?'Credit note':'Invoice')+' '+t.no+' — total ₹'+ADB.fmt(t.gt)+'. PDF attached.\n💳 UPI: '+($('sUpi').value||'jaintarachand85-1@okaxis')+'\n— Anant Coal Depot';
+  var url=ph?('https://wa.me/'+ph+'?text='+encodeURIComponent(msg)):('https://wa.me/?text='+encodeURIComponent(msg));
+  window.open(url,'_blank');
+});
+$('mDup').addEventListener('click',function(){
+  $('sheetMenu').classList.add('hidden');
+  var pref=store.get('prefix','ACD/TI/2026/27/'), nx=parseInt(store.get('next','93'),10);
+  $('sPrefix').value=pref; $('sNext').value=nx; store.set('next',nx+1);
+  savedNo=null; toast('Duplicated as '+pref+nx+' — press Save');
+  render();
+});
+$('mDel').addEventListener('click',function(){
+  var no=$('pInvNo').textContent;
+  if(ADB.get(no) && confirm('Delete '+no+' permanently? This cannot be undone.')){
+    ADB.del(no); $('sheetMenu').classList.add('hidden'); toast('Deleted'); newInvoice();
+  } else { $('sheetMenu').classList.add('hidden'); }
+});
+/* prev / next through saved invoices */
+function nav(step){
+  var a=ADB.all(); if(!a.length)return;
+  var cur=$('pInvNo').textContent, i=a.findIndex(function(x){return x.no===cur;});
+  var j=(i<0)?(step<0?a.length-1:0):i+step;
+  if(j<0||j>=a.length){toast(step<0?'Oldest invoice':'Newest invoice');return;}
+  location.href='?load='+encodeURIComponent(a[j].no);
+}
+$('navPrev').addEventListener('click',function(){nav(-1);});
+$('navNext').addEventListener('click',function(){nav(1);});
+/* customer memory: suggestions + autofill + last order */
+function fillCustomer(c){
+  lastCust=c;
+  $('cName').value=c.name; $('cPhone').value=c.phone||''; $('cGst').value=c.gstin||''; $('cAddr').value=c.addr||'';
+  withinAssam=(c.pos==='AS'); $('tIn').className=withinAssam?'on':''; $('tOut').className=withinAssam?'':'on';
+  if(!withinAssam)$('cState').value=(c.state&&c.state!=='Other')?c.state:'';
+  $('sug').classList.add('hidden');
+  $('lastChip').classList.toggle('hidden', !(c.items&&c.items.length));
+  render();
+}
+function suggest(){
+  var q=$('cName').value.trim().toLowerCase();
+  var box=$('sug');
+  if(q.length<2){box.classList.add('hidden');return;}
+  var hits=ADB.customers().filter(function(c){
+    return (c.name||'').toLowerCase().indexOf(q)>=0||(c.phone||'').indexOf(q)>=0||(c.gstin||'').toLowerCase().indexOf(q)>=0;
+  }).slice(0,6);
+  if(!hits.length){box.classList.add('hidden');return;}
+  box.innerHTML='';
+  hits.forEach(function(c){
+    var d=document.createElement('div');
+    d.style.cssText='padding:11px 12px;border-bottom:1px solid var(--line);font-size:14px;';
+    d.innerHTML='<b>'+c.name+'</b> <span style="color:var(--dim);font-size:12px;">'+(c.phone||'')+'</span><br><span style="color:var(--dim);font-size:11.5px;">'+c.count+' invoices · last '+ADB.dmy(c.last)+(c.out>0?' · ₹'+ADB.fmt(c.out)+' pending':'')+'</span>';
+    d.addEventListener('click',function(){fillCustomer(c);});
+    box.appendChild(d);
+  });
+  box.classList.remove('hidden');
+}
+$('cName').addEventListener('input',suggest);
+$('loadLast').addEventListener('click',function(){
+  if(!lastCust||!lastCust.items)return;
+  $('items').innerHTML='';
+  lastCust.items.forEach(function(it){ addItem(); var d=document.querySelectorAll('#items .item'); d=d[d.length-1];
+    d.querySelector('.iProd').value=it.p; d.querySelector('.iHsn').value=it.hsn; d.querySelector('.iQty').value=it.q;
+    d.querySelector('.iUnit').value=it.u; d.querySelector('.iRate').value=it.r; d.querySelector('.iGst').value=it.g; d.querySelector('.iCess').value=it.c||0; });
+  toast('Last order loaded — check today\u2019s rate');
+  render();
+});
+/* draft autosave (unsaved work survives app close) */
+var draftT=null;
+function saveDraft(){ try{ var t=collectTxn(); if(t.name||t.items.some(function(i){return i.r>0;})) localStorage.setItem('acdb_draft', JSON.stringify(t)); }catch(e){} }
+document.addEventListener('input',function(){ clearTimeout(draftT); draftT=setTimeout(saveDraft,700); });
+$('bakMake').addEventListener('click',makeBackup);
+$('bakLoad').addEventListener('click',loadBackup);
+$('zoomBtn').addEventListener('click',function(){var b=document.querySelector('.fitbox');var z=b.classList.toggle('zoomed');this.textContent=z?'Fit':'Zoom';if(!z)fit();});
+['sPrefix','sNext','sUpi','sCopy','sSig','cName','cPhone','cAddr','cGst','cTrans','cVeh','cDos','cState','shName','shAddr','shGst']
+  .forEach(function(id){ $(id).addEventListener('input',render); $(id).addEventListener('change',render); });
+
+(function(){
+  $('sPrefix').value=store.get('prefix','ACD/TI/2026/27/');
+  $('sNext').value=store.get('next','93');
+  $('sUpi').value=store.get('upi','jaintarachand85-1@okaxis');
+  $('sSig').value=store.get('sig','p');
+  var d=new Date();
+  $('pDate').textContent=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
+  var q=new URLSearchParams(location.search).get('load');
+  var qc=new URLSearchParams(location.search).get('cust');
+  var t=q?ADB.get(q):null;
+  if(!t&&!q){ try{ var dr=localStorage.getItem('acdb_draft'); if(dr){ t=JSON.parse(dr); t.no=null; } }catch(e){} }
+  if(t){
+    if(t.no){ $('sPrefix').value=''; $('sNext').value=t.no; }
+    $('cName').value=t.name||''; $('cPhone').value=t.phone||''; $('cGst').value=t.gstin||''; $('cAddr').value=t.addr||'';
+    $('cVeh').value=t.veh||''; $('cTrans').value=t.trans||''; $('cDos').value=t.dos||''; $('cType').value=t.type||'INV';
+    withinAssam=(t.pos==='AS'); $('tIn').className=withinAssam?'on':''; $('tOut').className=withinAssam?'':'on';
+    if(!withinAssam)$('cState').value=(t.state==='Other'?'':t.state);
+    rc=!!t.rc; $('rcNo').className=rc?'':'on'; $('rcYes').className=rc?'on':'';
+    if(t.paid){$('payR').className='on';$('payP').className='';}
+    (t.items||[]).forEach(function(it,i){ addItem(); var d=document.querySelectorAll('#items .item'); d=d[d.length-1];
+      d.querySelector('.iProd').value=it.p; d.querySelector('.iHsn').value=it.hsn; d.querySelector('.iQty').value=it.q;
+      d.querySelector('.iUnit').value=it.u; d.querySelector('.iRate').value=it.r; d.querySelector('.iGst').value=it.g;
+      d.querySelector('.iCess').value=it.c||0; });
+    render();
+  } else {
+    addItem();
+    if(qc){ var cc=ADB.customers().find(function(c){return c.name===qc;}); if(cc) fillCustomer(cc); }
+  }
+  fit();
+})();
+if('serviceWorker' in navigator){try{navigator.serviceWorker.register('../sw.js');}catch(e){}}
+</script>
+</body>
+</html>

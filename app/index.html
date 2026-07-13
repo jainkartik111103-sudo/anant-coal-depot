@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="robots" content="noindex,nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>Anant Business</title>
+<style>
+  :root{--coal:#17160F;--card:#232118;--gold:#C9A227;--gold-soft:#e6c968;--txt:#f0ede4;--dim:#a49d89;--line:#3c3929;}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:var(--coal);color:var(--txt);
+       min-height:100vh;padding:calc(18px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));}
+  .wrap{max-width:520px;margin:0 auto;}
+  h1{font-family:Georgia,serif;font-size:22px;letter-spacing:.05em;color:var(--gold-soft);font-weight:600;}
+  .sub{color:var(--dim);font-size:12.5px;margin:4px 0 22px;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  a.tile,div.tile{display:flex;flex-direction:column;justify-content:space-between;min-height:112px;background:var(--card);
+       border:1px solid var(--line);border-radius:16px;padding:16px;text-decoration:none;color:var(--txt);}
+  .tile .ico{font-size:26px;}
+  .tile .nm{font-size:15px;font-weight:700;margin-top:10px;}
+  .tile .st{font-size:11px;color:var(--dim);margin-top:2px;}
+  a.tile:active{background:#2b2920;}
+  div.tile{opacity:.45;}
+  .note{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:13px;color:var(--dim);line-height:1.55;}
+  .note b{color:var(--gold-soft);}
+  .ver{text-align:center;color:#6d6754;font-size:11px;margin-top:20px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ANANT BUSINESS</h1>
+  <div class="sub">Internal tools · Anant Coal Depot · Est. 1990</div>
+  <div class="grid">
+    <a class="tile" href="invoice/" style="grid-column:1/-1;background:var(--gold);border-color:var(--gold);">
+      <span class="ico">🧾</span><span><span class="nm" style="color:#17160F;">＋ New Invoice</span><span class="st" style="color:#5c4d12;">Fill → Save → Send on WhatsApp</span></span></a>
+    <a class="tile" href="register/"><span class="ico">📒</span><span><span class="nm">Register &amp; Reports</span><span class="st">Search · GST working · exports</span></span></a>
+    <a class="tile" href="customers/"><span class="ico">👥</span><span><span class="nm">Customers</span><span class="st">Auto-built from invoices</span></span></a>
+    <a class="tile" href="templates/"><span class="ico">💬</span><span><span class="nm">WhatsApp Templates</span><span class="st">Tap to copy any message</span></span></a>
+  </div>
+  <div id="kpis" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;"></div>
+  <div class="note" id="recent" style="margin-top:12px;"></div>
+  <div class="note"><b>First time on this phone?</b> In Safari tap Share → <b>Add to Home Screen</b>. After that, Anant Business opens like an app and works even with weak internet.</div>
+  <div class="ver">Anant Business v1.2 · private · data stays on this phone</div>
+</div>
+<script src="db.js"></script>
+<script>
+(function(){
+  var kp=document.getElementById('kpis'), rc=document.getElementById('recent');
+  var all=ADB.all(), td=new Date().toISOString().slice(0,10);
+  var tds=all.filter(function(t){return t.date===td;}), tdS=0; tds.forEach(function(t){tdS+=ADB.sign(t)*t.gt;});
+  var m=ADB.month(), ms=0, out=0, pend=0;
+  all.forEach(function(t){ if(ADB.inRange(t,m[0],m[1]))ms+=ADB.sign(t)*t.gt; if(t.type!=='CRN'&&!t.paid){out+=t.gt;pend++;} });
+  function card(k,v){return '<div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px;"><div style="font-size:10.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;">'+k+'</div><div style="font-size:15px;font-weight:800;color:var(--gold-soft);margin-top:2px;">'+v+'</div></div>';}
+  kp.innerHTML=card("Today\u2019s Sales",'₹'+ADB.fmt(tdS))+card("Today\u2019s Invoices",tds.length)+card('Pending Payments',pend+' · ₹'+ADB.fmt(out))+card('Month Sales','₹'+ADB.fmt(ms));
+  var last=all.slice(-3).reverse();
+  rc.innerHTML='<b>Recent</b><br>'+(last.length?last.map(function(t){return t.no.split('/').pop()+' · '+t.name+' · ₹'+ADB.fmt(t.gt)+(t.paid?' ✓':' ⏳');}).join('<br>'):'No invoices yet — tap New Invoice to begin.')+'<br><span style="color:var(--dim)">Last backup: '+(ADB.lastBackup()?ADB.lastBackup().split('-').reverse().join('/'):'never — export CSV from Reports')+'</span>';
+})();
+if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js');}catch(e){}}</script>
+</body>
+</html>

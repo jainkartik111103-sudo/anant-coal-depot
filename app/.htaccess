@@ -1,0 +1,10 @@
+# Anant Business — private area. Set the FULL server path to .htpasswd below.
+# Find it in Hostinger hPanel → Files → File Manager (top bar shows the path),
+# e.g. /home/u123456789/domains/anantcoaldepot.in/public_html/app/.htpasswd
+AuthType Basic
+AuthName "Anant Business (private)"
+AuthUserFile /REPLACE/WITH/FULL/PATH/public_html/app/.htpasswd
+Require valid-user
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>

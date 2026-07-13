@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Register — Anant Business</title>
+<script src="../db.js"></script>
+<style>
+  :root{--coal:#17160F;--card:#232118;--card2:#2b2920;--gold:#C9A227;--gold-soft:#e6c968;--txt:#f0ede4;--dim:#a49d89;--line:#3c3929;--red:#e09090;--grn:#8fd19e;}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:var(--coal);color:var(--txt);
+       padding:calc(14px + env(safe-area-inset-top)) 0 calc(20px + env(safe-area-inset-bottom));}
+  .wrap{max-width:640px;margin:0 auto;padding:0 14px;}
+  .top a{color:var(--dim);font-size:13px;text-decoration:none;}
+  h1{font-family:Georgia,serif;font-size:19px;color:var(--gold-soft);font-weight:600;margin:6px 0 10px;}
+  .tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tabs button{white-space:nowrap;min-height:42px;padding:0 14px;border-radius:20px;border:1px solid var(--line);background:var(--card2);color:var(--dim);font-size:13.5px;font-family:inherit;}
+  .tabs button.on{background:var(--gold);color:var(--coal);font-weight:700;border-color:var(--gold);}
+  .filters{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px;}
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+  input,select{width:100%;min-height:44px;padding:8px 10px;font-size:16px;color:var(--txt);background:var(--card2);border:1px solid var(--line);border-radius:10px;font-family:inherit;}
+  label{font-size:11.5px;color:var(--dim);display:block;margin-bottom:3px;}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;}
+  .chips button{min-height:36px;padding:0 12px;border-radius:18px;border:1px solid var(--line);background:none;color:var(--dim);font-size:12.5px;font-family:inherit;}
+  .chips button.on{border-color:var(--gold);color:var(--gold-soft);}
+  .cardlist .tx{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;}
+  .tx .l1{display:flex;justify-content:space-between;font-size:14.5px;font-weight:700;}
+  .tx .l1 .amt{color:var(--gold-soft);}
+  .tx .l2{display:flex;justify-content:space-between;color:var(--dim);font-size:12.5px;margin-top:3px;}
+  .tx .l3{display:flex;gap:8px;margin-top:9px;}
+  .tx .l3 button, .tx .l3 a{flex:1;min-height:40px;border-radius:9px;border:1px solid var(--line);background:var(--card2);color:var(--txt);font-size:12.5px;font-family:inherit;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;}
+  .badge{font-size:11px;padding:3px 9px;border-radius:10px;font-weight:700;}
+  .b-p{background:#3d2a20;color:var(--red);} .b-r{background:#20351f;color:var(--grn);}
+  .b-t{background:#33301F;color:var(--gold-soft);margin-left:6px;}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;}
+  .kpi .v{font-size:17px;font-weight:800;color:var(--gold-soft);margin-top:2px;}
+  .kpi .k{font-size:11px;color:var(--dim);letter-spacing:.04em;text-transform:uppercase;}
+  .list h3{font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin:14px 0 6px;}
+  .list .li{display:flex;justify-content:space-between;padding:8px 2px;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px;}
+  .actions button{flex:1 1 45%;min-height:48px;border-radius:11px;border:1px solid var(--line);background:var(--card2);color:var(--txt);font-size:13.5px;font-family:inherit;}
+  .actions button.gold{background:var(--gold);color:var(--coal);border-color:var(--gold);font-weight:700;}
+  .empty{color:var(--dim);text-align:center;padding:26px 10px;font-size:13.5px;line-height:1.6;}
+  .hint{color:var(--dim);font-size:11.5px;line-height:1.5;padding:8px 2px;}
+  /* ---------- print area ---------- */
+  #printArea{display:none;}
+  @media print{
+    body{background:#fff;color:#111;padding:0;}
+    body>*:not(#printArea){display:none !important;}
+    #printArea{display:block;font-family:-apple-system,"Segoe UI",Roboto,sans-serif;color:#111;}
+    @page{size:A4;margin:12mm;}
+    h2.pt{font-family:Georgia,serif;font-size:16px;margin:0 0 2px;}
+    .psub{font-size:10.5px;color:#555;margin-bottom:10px;}
+    table.p{width:100%;border-collapse:collapse;margin:6px 0 12px;font-size:9.6px;}
+    table.p th{background:#17160F;color:#fff;padding:4px 5px;text-align:left;font-size:8.6px;text-transform:uppercase;}
+    table.p td{border-bottom:1px solid #ddd;padding:4px 5px;}
+    table.p .r{text-align:right;}
+    .sec{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin:12px 0 4px;color:#17160F;border-bottom:2px solid #C9A227;padding-bottom:2px;}
+    .tot{font-size:10.5px;} .tot b{font-size:11.5px;}
+    .sheetpg{page-break-after:always;padding-top:2mm;}
+    .sheetpg:last-child{page-break-after:auto;}
+    .ihd{display:flex;justify-content:space-between;border-bottom:2.5px solid #17160F;padding-bottom:8px;}
+    .ihd h3{font-family:Georgia,serif;font-size:17px;letter-spacing:.05em;}
+    .ihd .gr{width:44px;height:3px;background:#C9A227;margin:4px 0 6px;}
+    .ihd p{font-size:9.5px;color:#444;}
+    .ihd .m{text-align:right;font-size:9.5px;}
+    .ihd .m .t{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;}
+    .ptx{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:7px 0;border-bottom:1px solid #ddd;font-size:9.8px;}
+    .ptx h4{font-size:8px;text-transform:uppercase;letter-spacing:.1em;color:#8a8471;}
+    .itot{margin-left:auto;width:230px;font-size:10px;margin-top:6px;}
+    .itot div{display:flex;justify-content:space-between;padding:2px 0;}
+    .itot .g{border-top:2px solid #17160F;font-weight:800;margin-top:3px;padding-top:4px;font-size:11.5px;}
+    .iwd{font-size:9.5px;margin-top:6px;}
+    .isig{display:flex;justify-content:space-between;margin-top:14px;padding-top:8px;border-top:1px solid #ddd;font-size:9px;color:#555;}
+    .isig .ln{border-top:1px solid #999;padding-top:3px;margin-top:26px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a href="../">‹ Anant Business</a></div>
+  <h1>Register &amp; Reports</h1>
+  <div class="tabs">
+    <button class="on" data-v="reg" type="button">Register</button>
+    <button data-v="dash" type="button">Dashboard</button>
+    <button data-v="acct" type="button">Accountant</button>
+    <button data-v="rep" type="button">Reports</button>
+  </div>
+
+  <div class="filters">
+    <div class="frow">
+      <div><label>From</label><input type="date" id="fFrom"></div>
+      <div><label>To</label><input type="date" id="fTo"></div>
+    </div>
+    <div class="chips">
+      <button data-p="today" type="button">Today</button>
+      <button data-p="yday" type="button">Yesterday</button>
+      <button data-p="week" type="button">Week</button>
+      <button data-p="month" class="on" type="button">This Month</button>
+      <button data-p="quarter" type="button">Quarter</button>
+      <button data-p="fy" type="button">FY</button>
+      <button data-p="all" type="button">All</button>
+    </div>
+    <div style="margin-top:8px"><label>Search (invoice no · name · GSTIN · phone · vehicle · product)</label>
+      <input id="fQ" placeholder="Type to search…" autocomplete="off"></div>
+    <div style="margin-top:8px"><label>Sort</label><select id="fSort"><option value="new">Newest first</option><option value="old">Oldest first</option><option value="amt">Amount (high → low)</option><option value="pend">Pending first</option></select></div>
+  </div>
+
+  <div id="vReg"><div class="cardlist" id="txList"></div></div>
+
+  <div id="vDash" style="display:none">
+    <div class="cards" id="kpis"></div>
+    <div class="list"><h3>Top customers</h3><div id="topC"></div><h3>Top products</h3><div id="topP"></div></div>
+  </div>
+
+  <div id="vAcct" style="display:none">
+    <div class="cards" id="akpis"></div>
+    <div class="actions"><button class="gold" id="btnAcct" type="button">🖨 Print GST Working Paper</button></div>
+    <p class="hint">Working paper contains: B2B / B2C / Credit-Debit note registers, tax totals, HSN summary and invoice counts for the selected period — formatted for GSTR-1 preparation by your accountant. It is a working paper, not a return.</p>
+  </div>
+
+  <div id="vRep" style="display:none">
+    <div class="actions">
+      <button id="rTx" type="button">🖨 Transaction Summary</button>
+      <button id="rCust" type="button">🖨 Customer-wise</button>
+      <button id="rProd" type="button">🖨 Product-wise</button>
+      <button id="rHsn" type="button">🖨 HSN Summary</button>
+      <button class="gold" id="rMerge" type="button">🖨 All Invoices (merged, chronological)</button>
+      <button id="rOut" type="button">🖨 Outstanding Report</button>
+      <button id="rPay" type="button">🖨 Payments Received</button>
+      <button id="rCsv" type="button">⬇ Export CSV / Excel (item-level)</button>
+    </div>
+    <p class="hint">Every report derives from saved invoices — nothing is entered twice. "All Invoices" re-generates each invoice of the period as one chronological PDF for audit, GST files and records. CSV opens directly in Excel; GST-JSON / Tally export can plug into this same layer later.</p>
+  </div>
+</div>
+
+<div id="printArea"></div>
+
+<script>
+var view='reg';
+function $(i){return document.getElementById(i);}
+function today(){return new Date().toISOString().slice(0,10);}
+function setPeriod(p){
+  var f='',t='';
+  if(p==='today'){f=t=today();}
+  else if(p==='yday'){var y=ADB.yesterday();f=y[0];t=y[1];}
+  else if(p==='week'){var w=ADB.week();f=w[0];t=w[1];}
+  else if(p==='month'){var m=ADB.month();f=m[0];t=m[1];}
+  else if(p==='quarter'){var q=ADB.quarter();f=q[0];t=q[1];}
+  else if(p==='fy'){var y=ADB.fy();f=y[0];t=y[1];}
+  $('fFrom').value=f;$('fTo').value=t;refresh();
+}
+function filtered(){
+  var f=$('fFrom').value,t=$('fTo').value,q=($('fQ').value||'').toLowerCase();
+  return ADB.all().filter(function(x){
+    if(!ADB.inRange(x,f,t))return false;
+    if(!q)return true;
+    var hay=(x.no+' '+x.name+' '+(x.gstin||'')+' '+(x.phone||'')+' '+(x.veh||'')+' '+x.items.map(function(i){return i.p;}).join(' ')).toLowerCase();
+    return hay.indexOf(q)>=0;
+  });
+}
+/* ---------- Register ---------- */
+function renderReg(){
+  var a=filtered(), el=$('txList');
+  if(!a.length){el.innerHTML='<div class="empty">No transactions in this period.<br>Every invoice you Share from the Invoice module appears here automatically.</div>';return;}
+  el.innerHTML='';
+  var s=$('fSort').value;
+  if(s==='new')a=a.slice().reverse();
+  else if(s==='amt')a=a.slice().sort(function(x,y){return y.gt-x.gt;});
+  else if(s==='pend')a=a.slice().sort(function(x,y){return (x.paid?1:0)-(y.paid?1:0)||(y.date<x.date?-1:1);});
+  else a=a.slice();
+  a.forEach(function(t){
+    var d=document.createElement('div');d.className='tx';
+    var tb=t.type==='CRN'?'<span class="badge b-t">Credit Note</span>':t.type==='DBN'?'<span class="badge b-t">Debit Note</span>':'';
+    d.innerHTML='<div class="l1"><span>'+esc(t.name||'—')+tb+'</span><span class="amt">₹'+ADB.fmt(t.gt)+'</span></div>'
+      +'<div class="l2"><span>'+esc(t.no)+' · '+ADB.dmy(t.date)+(t.veh?' · '+esc(t.veh):'')+'</span>'
+      +'<span class="badge '+(t.paid?'b-r':'b-p')+'">'+(t.paid?'Received':'Pending')+'</span></div>'
+      +'<div class="l3"><button type="button" class="pay">'+(t.paid?'Mark Pending':'Mark Received')+'</button>'
+      +'<a href="../invoice/?load='+encodeURIComponent(t.no)+'">Open · Edit · Resend</a>'
+      +'<button type="button" class="rm" style="flex:0 0 44px;color:#e09090;border-color:#5a2020;">🗑</button></div>';
+    d.querySelector('.pay').addEventListener('click',function(){t.paid=!t.paid;ADB.put(t);refresh();});
+    d.querySelector('.rm').addEventListener('click',function(){ if(confirm('Delete '+t.no+' permanently?')){ADB.del(t.no);refresh();} });
+    el.appendChild(d);
+  });
+}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+/* ---------- aggregation ---------- */
+function agg(a){
+  var o={sales:0,tv:0,gst:0,cess:0,n:0,b2b:0,b2c:0,out:0,cust:{},prod:{},hsn:{},crn:0,dbn:0,inv:0};
+  a.forEach(function(t){
+    var s=ADB.sign(t);
+    o.sales+=s*t.gt;o.tv+=s*t.tv;o.gst+=s*(t.cg+t.sg+t.ig);o.cess+=s*(t.cess||0);o.n++;
+    if(t.type==='CRN')o.crn++;else if(t.type==='DBN')o.dbn++;else o.inv++;
+    if(t.type!=='CRN'&&!t.paid)o.out+=t.gt;
+    if(ADB.b2b(t))o.b2b++;else o.b2c++;
+    o.cust[t.name]=(o.cust[t.name]||0)+s*t.gt;
+    t.items.forEach(function(i){
+      var a1=i.q*i.r, g=a1*i.g/100;
+      o.prod[i.p]=(o.prod[i.p]||0)+s*a1;
+      var k=i.hsn||'—'; o.hsn[k]=o.hsn[k]||{tv:0,g:0,c:0,rate:i.g};
+      o.hsn[k].tv+=s*a1;o.hsn[k].g+=s*g;o.hsn[k].c+=s*(i.c||0);
+    });
+  });
+  return o;
+}
+function top(obj,n){return Object.keys(obj).map(function(k){return [k,obj[k]];}).sort(function(a,b){return b[1]-a[1];}).slice(0,n);}
+/* ---------- Dashboard ---------- */
+function renderDash(){
+  var o=agg(filtered());
+  $('kpis').innerHTML=[['Total Sales','₹'+ADB.fmt(o.sales)],['Taxable Turnover','₹'+ADB.fmt(o.tv)],
+    ['GST Collected','₹'+ADB.fmt(o.gst)],['Comp. Cess','₹'+ADB.fmt(o.cess)],
+    ['Invoices',o.inv+(o.crn||o.dbn?' (+'+o.crn+' CRN, '+o.dbn+' DBN)':'')],['Avg Invoice','₹'+ADB.fmt(o.inv?o.sales/o.inv:0)],
+    ['B2B / B2C',o.b2b+' / '+o.b2c],['Outstanding','₹'+ADB.fmt(o.out)]]
+    .map(function(k){return '<div class="kpi"><div class="k">'+k[0]+'</div><div class="v">'+k[1]+'</div></div>';}).join('');
+  var td=today(), all=ADB.all();
+  var tds=all.filter(function(t){return t.date===td;});
+  var tdSales=0; tds.forEach(function(t){tdSales+=ADB.sign(t)*t.gt;});
+  var last=all[all.length-1];
+  var extra=[['Today Sales','₹'+ADB.fmt(tdSales)],['Today Invoices',tds.length],
+    ['Last Invoice',last?last.no.split('/').pop()+' · ₹'+ADB.fmt(last.gt):'—'],
+    ['Last Backup',ADB.lastBackup()?ADB.dmy(ADB.lastBackup()):'Never — export CSV']];
+  $('kpis').innerHTML=extra.map(function(k){return '<div class="kpi"><div class="k">'+k[0]+'</div><div class="v" style="font-size:14px">'+k[1]+'</div></div>';}).join('')+$('kpis').innerHTML;
+  $('topC').innerHTML=top(agg(filtered()).cust,5).map(function(x){return '<div class="li"><span>'+esc(x[0])+'</span><b>₹'+ADB.fmt(x[1])+'</b></div>';}).join('')||'<div class="li">—</div>';
+  $('topP').innerHTML=top(agg(filtered()).prod,5).map(function(x){return '<div class="li"><span>'+esc(x[0])+'</span><b>₹'+ADB.fmt(x[1])+'</b></div>';}).join('')||'<div class="li">—</div>';
+}
+/* ---------- Accountant ---------- */
+function renderAcct(){
+  var o=agg(filtered());
+  $('akpis').innerHTML=[['Taxable Value','₹'+ADB.fmt(o.tv)],['CGST + SGST','₹'+ADB.fmt(0)],['Docs',o.n],['Cess','₹'+ADB.fmt(o.cess)]]
+    .map(function(k){return '<div class="kpi"><div class="k">'+k[0]+'</div><div class="v">'+k[1]+'</div></div>';}).join('');
+  // replace CGST+SGST kpi accurately
+  var a=filtered(),cg=0,ig=0; a.forEach(function(t){var s=ADB.sign(t);cg+=s*(t.cg+t.sg);ig+=s*t.ig;});
+  $('akpis').children[1].innerHTML='<div class="k">CGST+SGST / IGST</div><div class="v">₹'+ADB.fmt(cg)+' / ₹'+ADB.fmt(ig)+'</div>';
+}
+/* ---------- print helpers ---------- */
+function phead(title){
+  var f=$('fFrom').value,t=$('fTo').value;
+  return '<h2 class="pt">ANANT COAL DEPOT — '+title+'</h2>'
+   +'<div class="psub">Period: '+(f?ADB.dmy(f):'beginning')+' to '+(t?ADB.dmy(t):'today')
+   +' · GSTIN 18AABHT9778F1ZI · NH 37, Lalmati, Guwahati 781029 · Generated '+ADB.dmy(today())+'</div>';
+}
+function printHTML(html){ $('printArea').innerHTML=html; window.print(); }
+function txTable(a){
+  var r=a.map(function(t){return '<tr><td>'+esc(t.no)+'</td><td>'+ADB.dmy(t.date)+'</td><td>'+esc(t.name)+'</td><td>'+esc(t.gstin||'—')+'</td><td>'+esc(t.state)+'</td>'
+    +'<td class="r">'+ADB.fmt(ADB.sign(t)*t.tv)+'</td><td class="r">'+ADB.fmt(ADB.sign(t)*t.cg)+'</td><td class="r">'+ADB.fmt(ADB.sign(t)*t.sg)+'</td><td class="r">'+ADB.fmt(ADB.sign(t)*t.ig)+'</td><td class="r">'+ADB.fmt(ADB.sign(t)*(t.cess||0))+'</td>'
+    +'<td class="r">'+ADB.fmt(ADB.sign(t)*t.gt)+'</td><td>'+(t.paid?'Recd':'Pending')+'</td></tr>';}).join('');
+  return '<table class="p"><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>GSTIN</th><th>State</th><th>Taxable</th><th>CGST</th><th>SGST</th><th>IGST</th><th>Cess</th><th>Total</th><th>Pay</th></tr>'+r+'</table>';
+}
+function totLine(a){
+  var o=agg(a);var cg=0,ig=0;a.forEach(function(t){var s=ADB.sign(t);cg+=s*(t.cg+t.sg);ig+=s*t.ig;});
+  return '<div class="tot">Docs: <b>'+o.n+'</b> · Taxable: <b>₹'+ADB.fmt(o.tv)+'</b> · CGST+SGST: <b>₹'+ADB.fmt(cg)+'</b> · IGST: <b>₹'+ADB.fmt(ig)+'</b> · Cess: <b>₹'+ADB.fmt(o.cess)+'</b> · Grand: <b>₹'+ADB.fmt(o.sales)+'</b></div>';
+}
+function hsnTable(a){
+  var o=agg(a);
+  var rows=Object.keys(o.hsn).sort().map(function(k){var h=o.hsn[k];
+    return '<tr><td>'+esc(k)+'</td><td class="r">'+(h.rate||0)+'%</td><td class="r">'+ADB.fmt(h.tv)+'</td><td class="r">'+ADB.fmt(h.g)+'</td><td class="r">'+ADB.fmt(h.c)+'</td></tr>';}).join('');
+  return '<table class="p"><tr><th>HSN</th><th>GST %</th><th>Taxable Value</th><th>GST Amount</th><th>Cess</th></tr>'+rows+'</table>';
+}
+/* ---------- reports ---------- */
+$('rTx').addEventListener('click',function(){var a=filtered();printHTML(phead('Transaction Summary')+txTable(a)+totLine(a));});
+$('rHsn').addEventListener('click',function(){printHTML(phead('HSN Summary')+hsnTable(filtered()));});
+$('rCust').addEventListener('click',function(){
+  var o=agg(filtered());
+  var rows=top(o.cust,999).map(function(x){return '<tr><td>'+esc(x[0])+'</td><td class="r">'+ADB.fmt(x[1])+'</td></tr>';}).join('');
+  printHTML(phead('Customer-wise Summary')+'<table class="p"><tr><th>Customer</th><th>Total ₹</th></tr>'+rows+'</table>');
+});
+$('rProd').addEventListener('click',function(){
+  var o=agg(filtered());
+  var rows=top(o.prod,999).map(function(x){return '<tr><td>'+esc(x[0])+'</td><td class="r">'+ADB.fmt(x[1])+'</td></tr>';}).join('');
+  printHTML(phead('Product-wise Summary')+'<table class="p"><tr><th>Product</th><th>Taxable ₹</th></tr>'+rows+'</table>');
+});
+$('btnAcct').addEventListener('click',function(){
+  var a=filtered();
+  var b2b=a.filter(function(t){return t.type==='INV'&&ADB.b2b(t);});
+  var b2c=a.filter(function(t){return t.type==='INV'&&!ADB.b2b(t);});
+  var cn=a.filter(function(t){return t.type==='CRN';});
+  var dn=a.filter(function(t){return t.type==='DBN';});
+  var html=phead('GST Working Paper (for GSTR-1 preparation)')
+    +'<div class="sec">1 · B2B Invoices (registered buyers)</div>'+(b2b.length?txTable(b2b)+totLine(b2b):'<div class="tot">None</div>')
+    +'<div class="sec">2 · B2C Invoices (unregistered buyers)</div>'+(b2c.length?txTable(b2c)+totLine(b2c):'<div class="tot">None</div>')
+    +'<div class="sec">3 · Credit Notes</div>'+(cn.length?txTable(cn)+totLine(cn):'<div class="tot">None</div>')
+    +'<div class="sec">4 · Debit Notes</div>'+(dn.length?txTable(dn)+totLine(dn):'<div class="tot">None</div>')
+    +'<div class="sec">5 · HSN Summary</div>'+hsnTable(a)
+    +'<div class="sec">6 · Period Totals</div>'+totLine(a)
+    +'<div class="tot" style="margin-top:6px">Exports / SEZ / Nil-rated: none in this period (sections reserved). Prepared from the Anant Business register; working paper only — not a return.</div>';
+  printHTML(html);
+});
+/* ---------- merged invoices ---------- */
+function sheetFor(t){
+  var c=ADB.compute(t);
+  var rows=t.items.map(function(i,x){var a1=i.q*i.r;
+    return '<tr><td>'+(x+1)+'</td><td>'+esc(i.p)+'</td><td>'+esc(i.hsn)+'</td><td class="r">'+i.q+'</td><td>'+esc(i.u)+'</td><td class="r">'+ADB.fmt(i.r)+'</td><td class="r">'+i.g+'%</td><td class="r">'+ADB.fmt(a1)+'</td></tr>';}).join('');
+  var tax=t.rc?'<div><span>GST payable on reverse charge (by recipient)</span><span>₹'+ADB.fmt(c.rcGst)+'</span></div>'
+    :(t.pos==='AS'?'<div><span>CGST</span><span>₹'+ADB.fmt(c.cg)+'</span></div><div><span>SGST</span><span>₹'+ADB.fmt(c.sg)+'</span></div>'
+                  :'<div><span>IGST</span><span>₹'+ADB.fmt(c.ig)+'</span></div>');
+  if(!t.rc&&c.cess>0)tax+='<div><span>Comp. cess</span><span>₹'+ADB.fmt(c.cess)+'</span></div>';
+  var title=t.type==='CRN'?'Credit Note':t.type==='DBN'?'Debit Note':(t.gstin?'Tax Invoice':'Invoice');
+  var sig=t.sig==='d'?'<b>Tarachand Jain</b> — Authorised Signatory (digitally issued)':'<span class="ln">For Anant Coal Depot — Authorised Signatory</span>';
+  return '<div class="sheetpg">'
+   +'<div class="ihd"><div><h3>ANANT COAL DEPOT</h3><div class="gr"></div>'
+   +'<p>N.H. 37, Near Nidhi Bhawan, Lalmati, Beltola, Guwahati – 781029 (Assam)<br>Ph: 94350 18204 · 99574 39095 · <b>GSTIN: 18AABHT9778F1ZI</b></p></div>'
+   +'<div class="m"><div class="t">'+title+'</div><div>No: <b>'+esc(t.no)+'</b></div><div>Date: <b>'+ADB.dmy(t.date)+'</b></div>'+(t.veh?'<div>Vehicle: <b>'+esc(t.veh)+'</b></div>':'')+'</div></div>'
+   +'<div class="ptx"><div><h4>Billed to</h4><b>'+esc(t.name)+'</b><br>'+esc(t.addr||'')+(t.gstin?'<br>GSTIN: '+esc(t.gstin):'')+'</div>'
+   +'<div style="text-align:right"><h4>Place of supply</h4>'+esc(t.state)+'</div></div>'
+   +'<table class="p"><tr><th>#</th><th>Description</th><th>HSN</th><th>Qty</th><th>Unit</th><th>Rate</th><th>GST%</th><th>Amount</th></tr>'+rows+'</table>'
+   +'<div class="itot"><div><span>Total before tax</span><span>₹'+ADB.fmt(c.tv)+'</span></div>'+tax
+   +'<div class="g"><span>Total after tax</span><span>₹'+ADB.fmt(c.gt)+'</span></div></div>'
+   +'<div class="iwd">Rupees in words: <b>'+ADB.words(c.gt)+' Only</b> · Bank: Axis Bank, Rehabari · A/c 919020029612841 · IFSC UTIB0003097'+(t.upi?' · UPI: '+esc(t.upi):'')+'</div>'
+   +'<div class="isig"><div>Common Seal</div><div style="text-align:right">'+sig+'</div></div>'
+   +'</div>';
+}
+$('rMerge').addEventListener('click',function(){
+  var a=filtered();
+  if(!a.length)return;
+  printHTML(a.map(sheetFor).join(''));
+});
+/* ---------- CSV (Excel-compatible, item level) ---------- */
+$('rOut').addEventListener('click',function(){
+  var a=filtered().filter(function(t){return t.type!=='CRN'&&!t.paid;});
+  printHTML(phead('Outstanding Payments')+txTable(a)+totLine(a));
+});
+$('rPay').addEventListener('click',function(){
+  var a=filtered().filter(function(t){return t.paid;});
+  printHTML(phead('Payments Received')+txTable(a)+totLine(a));
+});
+$('rCsv').addEventListener('click',function(){
+  var head=['Invoice No','Date','Type','Customer','GSTIN','State','Phone','Vehicle','Product','HSN','Qty','Unit','Rate','Taxable','GST %','CGST','SGST','IGST','Cess','Invoice Total','Payment'];
+  var lines=[head.join(',')];
+  filtered().forEach(function(t){
+    t.items.forEach(function(i){
+      var a1=i.q*i.r,g=a1*i.g/100,inAS=t.pos==='AS',rc=t.rc;
+      var row=[t.no,ADB.dmy(t.date),t.type,t.name,t.gstin||'',t.state,t.phone||'',t.veh||'',i.p,i.hsn,i.q,i.u,i.r,
+        a1.toFixed(2),i.g,(!rc&&inAS?g/2:0).toFixed(2),(!rc&&inAS?g/2:0).toFixed(2),(!rc&&!inAS?g:0).toFixed(2),(i.c||0).toFixed(2),t.gt,(t.paid?'Received':'Pending')];
+      lines.push(row.map(function(v){v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(','));
+    });
+  });
+  var blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='anant-register-'+($('fFrom').value||'all')+'-to-'+($('fTo').value||today())+'.csv';
+  document.body.appendChild(a);a.click();a.remove();ADB.stampBackup();
+});
+/* ---------- wiring ---------- */
+document.querySelectorAll('.tabs button').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.tabs button').forEach(function(x){x.className='';});
+    b.className='on';view=b.getAttribute('data-v');
+    ['Reg','Dash','Acct','Rep'].forEach(function(v){$('v'+v).style.display='none';});
+    $('v'+view.charAt(0).toUpperCase()+view.slice(1)).style.display='';
+    refresh();
+  });
+});
+document.querySelectorAll('.chips button').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.chips button').forEach(function(x){x.className='';});
+    b.className='on';setPeriod(b.getAttribute('data-p'));
+  });
+});
+['fFrom','fTo','fQ','fSort'].forEach(function(i){$(i).addEventListener('input',refresh);});
+function refresh(){ if(view==='reg')renderReg(); else if(view==='dash')renderDash(); else if(view==='acct')renderAcct(); }
+setPeriod('month');
+if('serviceWorker' in navigator){try{navigator.serviceWorker.register('../sw.js');}catch(e){}}
+</script>
+</body>
+</html>
