@@ -6,7 +6,7 @@
 <style>
 :root{--coal:#17160F;--card:#232118;--card2:#2b2920;--gold:#C9A227;--gold-soft:#e6c968;--txt:#f0ede4;--dim:#a49d89;--line:#3c3929;--red:#e09090;--grn:#8fd19e;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:var(--coal);color:var(--txt);padding:calc(14px + env(safe-area-inset-top)) 0 calc(20px + env(safe-area-inset-bottom));}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:var(--coal);color:var(--txt);padding:calc(14px + env(safe-area-inset-top)) 0 calc(80px + env(safe-area-inset-bottom));}
 .wrap{max-width:640px;margin:0 auto;padding:0 14px;}
 .top a{color:var(--dim);font-size:13px;text-decoration:none;}
 h1{font-family:Georgia,serif;font-size:19px;color:var(--gold-soft);font-weight:600;margin:6px 0 10px;}
@@ -24,7 +24,7 @@ h3{font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em
 a.newinv{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:12px;background:var(--gold);color:var(--coal);font-weight:700;text-decoration:none;margin:14px 0 8px;}
 a.small{color:var(--gold-soft);text-decoration:none;font-size:13px;}
 .empty{color:var(--dim);text-align:center;padding:26px 10px;font-size:13.5px;line-height:1.6;}
-</style></head><body>
+</style><script>window.addEventListener('error',function(e){var b=document.getElementById('bootErr');if(!b){b=document.createElement('div');b.id='bootErr';b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:999;background:#7a1f1f;color:#fff;padding:10px 14px;font:13px -apple-system,sans-serif;';b.innerHTML='App hit an error — close and reopen the app. If it repeats, tell Kartik: '+(e.message||'');document.body.appendChild(b);}});</script></head><body>
 <div class="wrap">
   <div class="top"><a href="../">&#8249; Anant Business</a> <a href="#" id="back" class="small" style="float:right;display:none;">&#8249; All customers</a></div>
   <h1>Customers</h1>
@@ -53,6 +53,7 @@ function renderList(){
   });
 }
 function showProf(c){
+  CURC=c;
   $('listV').style.display='none';$('back').style.display='inline';
   var pv=$('profV');pv.className='prof show';
   var beh=c.count?Math.round(100*c.paidN/c.count):0;
@@ -68,12 +69,35 @@ function showProf(c){
     +'<div class="kv"><span>Payment behaviour</span><b>'+beh+'% received</b></div>'
     +'<div class="kv"><span>Recent vehicles</span><b>'+esc(c.vehicles.slice(0,3).join(', ')||'—')+'</b></div>'
     +'<h3>Usual products (last rate)</h3><div style="font-size:13.5px;line-height:1.7;">'+prods+'</div>'
-    +'<a class="newinv" href="../invoice/?cust='+encodeURIComponent(c.name)+'">＋ New invoice for '+esc(c.name)+'</a>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 4px;">'
+    +'<a class="newinv" style="margin:0;" href="../invoice/?cust='+encodeURIComponent(c.name)+'">＋ New invoice</a>'
+    +'<a class="newinv" style="margin:0;background:var(--card2);color:var(--gold-soft);border:1px solid var(--gold);" href="../invoice/?cust='+encodeURIComponent(c.name)+'&last=1">↺ Repeat last order</a>'
+    +(c.phone?'<a class="newinv" style="margin:0;background:var(--card2);color:var(--txt);border:1px solid var(--line);" href="tel:+91'+c.phone.replace(/[^0-9]/g,'').slice(-10)+'">📞 Call</a>':'')
+    +(c.phone?'<a class="newinv" style="margin:0;background:var(--card2);color:var(--txt);border:1px solid var(--line);" target="_blank" rel="noopener" href="https://wa.me/91'+c.phone.replace(/[^0-9]/g,'').slice(-10)+'">💬 WhatsApp</a>':'')
+    +(c.out>0&&c.phone?'<a class="newinv" style="margin:0;grid-column:1/-1;background:#3d2a20;color:#e0b090;border:1px solid #5a2020;" target="_blank" rel="noopener" href="https://wa.me/91'+c.phone.replace(/[^0-9]/g,'').slice(-10)+'?text='+encodeURIComponent('Namaste '+c.name+' ji 🙏 Gentle reminder: ₹'+ADB.fmt(c.out)+' is pending at Anant Coal Depot. UPI: jaintarachand85-1@okaxis — Thank you!')+'">₹ Send payment reminder ('+ADB.fmt(c.out)+')</a>':'')
+    +'<button class="newinv" style="margin:0;grid-column:1/-1;background:var(--card2);color:var(--txt);border:1px solid var(--line);" type="button" onclick="stmt()">🖨 Customer statement</button></div>'
     +'<h3>Invoice history</h3>'
     +c.history.map(function(x){return '<div class="hist"><a class="small" href="../invoice/?load='+encodeURIComponent(x.no)+'">'+esc(x.no)+'</a><span>'+ADB.dmy(x.date)+'</span><b>₹'+ADB.fmt(x.gt)+'</b><span>'+(x.type!=='INV'?x.type:(x.paid?'✓':'⏳'))+'</span></div>';}).join('');
 }
+var CURC=null;
+window.stmt=function(){
+  var c=CURC; if(!c)return;
+  var rows=c.history.slice().reverse().map(function(x){return '<tr><td>'+esc(x.no)+'</td><td>'+ADB.dmy(x.date)+'</td><td>'+(x.type!=='INV'?x.type:'Invoice')+'</td><td style="text-align:right">'+ADB.fmt(x.gt)+'</td><td>'+(x.paid?'Received':'Pending')+'</td></tr>';}).join('');
+  var w='<div style="font-family:-apple-system,sans-serif;color:#111;">'
+   +'<h2 style="font-family:Georgia,serif;margin:0;">ANANT COAL DEPOT — Customer Statement</h2>'
+   +'<div style="font-size:11px;color:#555;margin:2px 0 10px;">'+esc(c.name)+(c.phone?' · '+esc(c.phone):'')+(c.gstin?' · GSTIN '+esc(c.gstin):'')+' · Generated '+ADB.dmy(new Date().toISOString().slice(0,10))+' · GSTIN 18AABHT9778F1ZI</div>'
+   +'<table style="width:100%;border-collapse:collapse;font-size:11px;"><tr><th style="background:#17160F;color:#fff;padding:5px;text-align:left;">Doc</th><th style="background:#17160F;color:#fff;padding:5px;text-align:left;">Date</th><th style="background:#17160F;color:#fff;padding:5px;text-align:left;">Type</th><th style="background:#17160F;color:#fff;padding:5px;text-align:right;">₹</th><th style="background:#17160F;color:#fff;padding:5px;text-align:left;">Status</th></tr>'
+   +rows.replace(/<td/g,'<td style="border-bottom:1px solid #ddd;padding:5px;"')+'</table>'
+   +'<div style="margin-top:8px;font-size:12px;">Lifetime business: <b>₹'+ADB.fmt(c.lifetime)+'</b> · Outstanding: <b>₹'+ADB.fmt(c.out)+'</b></div></div>';
+  var pa=document.createElement('div');pa.id='pa';pa.innerHTML=w;document.body.appendChild(pa);
+  var st=document.createElement('style');st.textContent='@media print{body>*:not(#pa){display:none !important;}body{background:#fff;padding:0;}}@page{size:A4;margin:14mm;}';document.head.appendChild(st);
+  window.print(); setTimeout(function(){pa.remove();st.remove();},500);
+};
 $('back').addEventListener('click',function(e){e.preventDefault();$('profV').className='prof';$('listV').style.display='';this.style.display='none';});
 $('q').addEventListener('input',renderList);
 renderList();
+ADB.onChange(renderList);
+ADB.sync(renderList);
 if('serviceWorker' in navigator){try{navigator.serviceWorker.register('../sw.js');}catch(e){}}
-</script></body></html>
+</script><div style="position:fixed;left:0;right:0;bottom:0;z-index:55;display:flex;background:#1d1b13;border-top:1px solid #3c3929;padding-bottom:env(safe-area-inset-bottom);"><a href="../" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;text-decoration:none;font-size:10.5px;color:#a49d89;"><span style="font-size:18px;">🏠</span>Home</a><a href="../invoice/" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;text-decoration:none;font-size:10.5px;color:#a49d89;"><span style="font-size:18px;">🧾</span>Invoice</a><a href="../register/" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;text-decoration:none;font-size:10.5px;color:#a49d89;"><span style="font-size:18px;">📒</span>Register</a><a href="../customers/" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;text-decoration:none;font-size:10.5px;color:#C9A227;font-weight:700;"><span style="font-size:18px;">👥</span>Customers</a></div>
+</body></html>

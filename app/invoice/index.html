@@ -125,7 +125,7 @@
     @page{ size:A4; margin:13mm; }
   }
 </style>
-</head>
+<script>window.addEventListener('error',function(e){var b=document.getElementById('bootErr');if(!b){b=document.createElement('div');b.id='bootErr';b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:999;background:#7a1f1f;color:#fff;padding:10px 14px;font:13px -apple-system,sans-serif;';b.innerHTML='App hit an error — close and reopen the app. If it repeats, tell Kartik: '+(e.message||'');document.body.appendChild(b);}});</script></head>
 <body>
 <noscript><div class="noscript-banner"><b>This tool needs Safari.</b><br>You are previewing the file (buttons won't work here). Tap the Share icon → "Open in Safari", then use it there. Tip: in Safari tap Share → "Add to Home Screen" once — after that it opens like an app.</div></noscript>
 
@@ -135,10 +135,11 @@
     <span>
       <button id="navPrev" type="button" style="min-height:36px;min-width:44px;border-radius:9px;border:1px solid var(--line);background:var(--card2);color:var(--txt);font-size:15px;">‹</button>
       <a href="../register/" style="display:inline-block;color:#e6c968;font-size:12.5px;text-decoration:none;border:1px solid var(--line);border-radius:9px;padding:9px 12px;background:var(--card2);">🕘 Previous invoices</a>
+      <button id="btnMore" type="button" style="min-height:36px;min-width:44px;border-radius:9px;border:1px solid var(--line);background:var(--card2);color:var(--txt);font-size:17px;">⋯</button>
       <button id="navNext" type="button" style="min-height:36px;min-width:44px;border-radius:9px;border:1px solid var(--line);background:var(--card2);color:var(--txt);font-size:15px;">›</button>
     </span>
   </div>
-  <h1>ANANT INVOICE</h1>
+  <h1>ANANT INVOICE <span id="stat" style="font-size:11px;font-weight:600;vertical-align:middle;background:#3d2a20;color:#e0b090;border-radius:10px;padding:4px 10px;margin-left:6px;">Draft</span></h1>
   <small>Fill → Share PDF on WhatsApp · works offline · printing only when needed</small>
 </div>
 
@@ -164,7 +165,7 @@
   <div class="row"><label>Place of supply</label>
     <div class="toggle"><button id="tIn" class="on" type="button">Within Assam</button><button id="tOut" type="button">Outside Assam (IGST)</button></div>
   </div>
-  <div class="row hidden" id="stateRow"><label>Destination state</label><input id="cState" placeholder="e.g. Meghalaya"></div>
+  <div class="row hidden" id="stateRow"><label>Destination state *</label><select id="cState"><option value="">— Select state —</option><option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Bihar</option><option>Chhattisgarh</option><option>Goa</option><option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option><option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option><option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Sikkim</option><option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option><option>Andaman & Nicobar</option><option>Chandigarh</option><option>Dadra & Nagar Haveli and Daman & Diu</option><option>Delhi</option><option>Jammu & Kashmir</option><option>Ladakh</option><option>Lakshadweep</option><option>Puducherry</option></select></div>
   <div class="row"><div class="pair">
     <div><label>Document</label><select id="cType"><option value="INV">Tax Invoice</option><option value="CRN">Credit Note</option><option value="DBN">Debit Note</option></select></div>
     <div><label>Payment</label><div class="toggle"><button id="payP" class="on" type="button">Pending</button><button id="payR" type="button">Received</button></div></div>
@@ -252,15 +253,20 @@
   <div style="display:grid;gap:8px;">
     <button class="addbtn" style="margin:0;width:100%;border-style:solid;background:var(--gold);color:var(--coal);font-weight:700;" type="button" id="mWa">💬 Open WhatsApp chat (message ready)</button>
     <button class="addbtn" style="margin:0;width:100%;border-style:solid;" type="button" id="mPdf">🧾 Save / Print PDF (attach in WhatsApp)</button>
-    <button class="addbtn" style="margin:0;width:100%;" type="button" id="mDup">⧉ Duplicate as new invoice</button>
-    <button class="addbtn" style="margin:0;width:100%;border-color:#5a2020;color:#e09090;" type="button" id="mDel">🗑 Delete this invoice</button>
     <button class="addbtn" style="margin:0;width:100%;" type="button" id="mClose">Close</button>
   </div>
 </div>
-<div id="toast" style="position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(90px);background:var(--gold);color:var(--coal);font-weight:700;padding:11px 20px;border-radius:22px;transition:transform .2s;z-index:70;">Saved ✓</div>
+<div id="moreMenu" class="hidden" style="position:fixed;left:0;right:0;bottom:0;z-index:60;background:var(--card);border-top:1px solid var(--line);padding:14px 14px calc(14px + env(safe-area-inset-bottom));">
+  <div style="display:grid;gap:8px;">
+    <button class="addbtn" style="margin:0;width:100%;" type="button" id="mDup">⧉ Duplicate as new invoice</button>
+    <button class="addbtn" style="margin:0;width:100%;border-color:#5a2020;color:#e09090;" type="button" id="mDel">🗑 Delete this invoice…</button>
+    <button class="addbtn" style="margin:0;width:100%;" type="button" id="mClose2">Close</button>
+  </div>
+</div>
+<div id="toast" style="position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(90px);background:var(--gold);color:var(--coal);font-weight:700;padding:11px 20px;border-radius:22px;transition:transform .2s;z-index:70;">Saved ✓</div>
 
 <script>
-var APP_VERSION="4.0";
+var APP_VERSION="6.0"; var editNo=null, editDate=null, dirty=false;
 var store={ get:function(k,d){try{var v=localStorage.getItem('acd3_'+k);return v===null?d:v;}catch(e){return d;}},
             set:function(k,v){try{localStorage.setItem('acd3_'+k,v);}catch(e){}} };
 var PRODUCTS=[{n:'Hard Coke',hsn:'27040030'},{n:'Hard Coke Dust',hsn:'27040090'},
@@ -325,7 +331,7 @@ function render(){
   $('pTotals').innerHTML=t;
   $('pWords').textContent=inWords(grand)+' Only';
   $('pCopy').textContent=$('sCopy').value;
-  $('pInvNo').textContent=$('sPrefix').value+$('sNext').value;
+  $('pInvNo').textContent=editNo||($('sPrefix').value+$('sNext').value);
   $('pRC').textContent=rc?'Yes':'No';
   $('pName').textContent=$('cName').value||'—';
   $('pAddr').textContent=$('cAddr').value;
@@ -353,7 +359,9 @@ function render(){
 }
 
 function newInvoice(){
-  $('sNext').value=parseInt($('sNext').value||'1',10)+1;
+  editNo=null; editDate=null; dirty=false; setStat('draft');
+  $('sPrefix').value=store.get('prefix','ACD/TI/2026/27/');
+  $('sNext').value=store.get('next','93'); savedNo=null;
   ['cName','cPhone','cAddr','cGst','cTrans','cVeh','cDos','cState','shName','shAddr','shGst'].forEach(function(id){$(id).value='';});
   $('shipDiff').checked=false; $('items').innerHTML=''; addItem();
   window.scrollTo({top:0,behavior:'smooth'});
@@ -388,9 +396,9 @@ function collectTxn(){
       q:num(it.querySelector('.iQty').value), u:it.querySelector('.iUnit').value,
       r:num(it.querySelector('.iRate').value), g:num(it.querySelector('.iGst').value),
       c:num(it.querySelector('.iCess').value)});});
-  var t={no:$('sPrefix').value+$('sNext').value, date:new Date().toISOString().slice(0,10),
+  var t={no:editNo||($('sPrefix').value+$('sNext').value), date:editDate||new Date().toISOString().slice(0,10),
     type:$('cType').value, name:$('cName').value, phone:$('cPhone').value, gstin:($('cGst').value||'').toUpperCase(),
-    addr:$('cAddr').value, pos:withinAssam?'AS':'OTH', state:withinAssam?'Assam':($('cState').value||'Other'),
+    addr:$('cAddr').value, pos:withinAssam?'AS':'OTH', state:withinAssam?'Assam':$('cState').value,
     veh:($('cVeh').value||'').toUpperCase(), trans:$('cTrans').value, dos:$('cDos').value, rc:rc,
     upi:$('sUpi').value, sig:$('sSig').value, paid:$('payR').className==='on', items:items};
   var c=ADB.compute(t); t.tv=c.tv; t.cg=c.cg; t.sg=c.sg; t.ig=c.ig; t.cess=c.cess; t.gt=c.gt;
@@ -398,18 +406,47 @@ function collectTxn(){
 }
 var savedNo=null, lastCust=null;
 function toast(m){var x=$('toast');x.textContent=m;x.style.transform='translateX(-50%) translateY(0)';setTimeout(function(){x.style.transform='translateX(-50%) translateY(90px)';},1500);}
+function validate(t){
+  if(!t.no||!/\d/.test(t.no)) return 'Invoice number missing — check Settings';
+  if(!t.name.trim()) return 'Customer name required';
+  if(t.gstin && !/^[0-9]{2}[A-Z0-9]{10}[0-9A-Z]{3}$/.test(t.gstin)) return 'GSTIN looks wrong (15 characters)';
+  if(!withinAssam && !$('cState').value) return 'Select destination state (IGST)';
+  if(!t.items.length) return 'Add at least one item';
+  for(var i=0;i<t.items.length;i++){ var it=t.items[i];
+    if(!(it.q>0)) return 'Item '+(i+1)+': quantity required';
+    if(!(it.r>0)) return 'Item '+(i+1)+': rate required';
+    if(!/^\d{4,8}$/.test(it.hsn)) return 'Item '+(i+1)+': HSN must be 4–8 digits';
+    if(!(it.g>=0)) return 'Item '+(i+1)+': GST %% required'; }
+  return '';
+}
 function doSave(silent){
   render(); var t=collectTxn();
-  if(!t.name){ if(!silent)toast('Enter customer name'); return null; }
-  if(!(t.gt>0)){ if(!silent)toast('Add item with rate'); return null; }
+  var err=validate(t);
+  if(err){ toast(err); setStat(dirty?'dirty':'draft'); return null; }
+  setStat('saving');
   if(!ADB.put(t)){ alert('Storage full — export backup from Register, then archive.'); return null; }
-  savedNo=t.no; try{localStorage.removeItem('acdb_draft');}catch(e){}
-  if(!silent)toast('Saved '+t.no+' ✓');
+  if(!editNo && savedNo!==t.no){ store.set('next', String(parseInt($('sNext').value||'1',10)+1)); }
+  savedNo=t.no; dirty=false; try{localStorage.removeItem('acdb_draft');}catch(e){}
+  setStat('saved', new Date().toTimeString().slice(0,5));
+  
   return t;
 }
 $('btnSave').addEventListener('click',function(){doSave(false);});
-$('btnShare').addEventListener('click',function(){ var t=doSave(true); if(!t)return doSave(false); toast('Saved '+t.no+' ✓'); $('sheetMenu').classList.remove('hidden'); });
+$('btnShare').addEventListener('click',function(){ var t=doSave(false); if(!t)return; $('sheetMenu').classList.remove('hidden'); });
 $('mClose').addEventListener('click',function(){$('sheetMenu').classList.add('hidden');});
+$('btnMore').addEventListener('click',function(){$('moreMenu').classList.remove('hidden');});
+$('mClose2').addEventListener('click',function(){$('moreMenu').classList.add('hidden');});
+function fmtNow(){var d=new Date();var M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var hr=d.getHours(),ap=hr>=12?'PM':'AM';hr=hr%12||12;
+  return d.getDate()+' '+M[d.getMonth()]+', '+hr+':'+String(d.getMinutes()).padStart(2,'0')+' '+ap;}
+function setStat(mode,extra){
+  var s=$('stat');
+  if(mode==='draft'){s.textContent='Draft';s.style.background='#33301F';s.style.color='#a49d89';}
+  else if(mode==='dirty'){s.textContent='Unsaved changes';s.style.background='#3d2a20';s.style.color='#e0b090';}
+  else if(mode==='saving'){s.textContent='Saving…';s.style.background='#33301F';s.style.color='#e6c968';}
+  else if(mode==='saved'){s.textContent='Saved ✓ '+fmtNow();s.style.background='#20351f';s.style.color='#8fd19e';}
+  else if(mode==='edit'){s.textContent='Editing '+extra+' — no changes yet';s.style.background='#33301F';s.style.color='#e6c968';}
+}
 $('mPdf').addEventListener('click',function(){$('sheetMenu').classList.add('hidden');render();window.print();});
 $('mWa').addEventListener('click',function(){
   $('sheetMenu').classList.add('hidden');
@@ -420,17 +457,18 @@ $('mWa').addEventListener('click',function(){
   window.open(url,'_blank');
 });
 $('mDup').addEventListener('click',function(){
-  $('sheetMenu').classList.add('hidden');
-  var pref=store.get('prefix','ACD/TI/2026/27/'), nx=parseInt(store.get('next','93'),10);
-  $('sPrefix').value=pref; $('sNext').value=nx; store.set('next',nx+1);
-  savedNo=null; toast('Duplicated as '+pref+nx+' — press Save');
+  $('moreMenu').classList.add('hidden');
+  editNo=null; editDate=null;
+  var pref=store.get('prefix','ACD/TI/2026/27/'), nx=store.get('next','93');
+  $('sPrefix').value=pref; $('sNext').value=nx; savedNo=null; dirty=true; setStat('dirty');
+  toast('Duplicated as '+pref+nx+' — press Save');
   render();
 });
 $('mDel').addEventListener('click',function(){
   var no=$('pInvNo').textContent;
-  if(ADB.get(no) && confirm('Delete '+no+' permanently? This cannot be undone.')){
-    ADB.del(no); $('sheetMenu').classList.add('hidden'); toast('Deleted'); newInvoice();
-  } else { $('sheetMenu').classList.add('hidden'); }
+  if(ADB.get(no) && confirm('Delete '+no+' permanently? This affects GST records and cannot be undone.')){
+    ADB.del(no); $('moreMenu').classList.add('hidden'); toast('Deleted'); editNo=null; editDate=null; newInvoice();
+  } else { $('moreMenu').classList.add('hidden'); }
 });
 /* prev / next through saved invoices */
 function nav(step){
@@ -483,7 +521,7 @@ $('loadLast').addEventListener('click',function(){
 /* draft autosave (unsaved work survives app close) */
 var draftT=null;
 function saveDraft(){ try{ var t=collectTxn(); if(t.name||t.items.some(function(i){return i.r>0;})) localStorage.setItem('acdb_draft', JSON.stringify(t)); }catch(e){} }
-document.addEventListener('input',function(){ clearTimeout(draftT); draftT=setTimeout(saveDraft,700); });
+document.addEventListener('input',function(){ if(!dirty){dirty=true;setStat('dirty');} clearTimeout(draftT); draftT=setTimeout(saveDraft,700); });
 $('bakMake').addEventListener('click',makeBackup);
 $('bakLoad').addEventListener('click',loadBackup);
 $('zoomBtn').addEventListener('click',function(){var b=document.querySelector('.fitbox');var z=b.classList.toggle('zoomed');this.textContent=z?'Fit':'Zoom';if(!z)fit();});
@@ -502,7 +540,7 @@ $('zoomBtn').addEventListener('click',function(){var b=document.querySelector('.
   var t=q?ADB.get(q):null;
   if(!t&&!q){ try{ var dr=localStorage.getItem('acdb_draft'); if(dr){ t=JSON.parse(dr); t.no=null; } }catch(e){} }
   if(t){
-    if(t.no){ $('sPrefix').value=''; $('sNext').value=t.no; }
+    if(t.no){ editNo=t.no; editDate=t.date; setStat('edit', t.no.split('/').pop()); } else { setStat('draft'); }
     $('cName').value=t.name||''; $('cPhone').value=t.phone||''; $('cGst').value=t.gstin||''; $('cAddr').value=t.addr||'';
     $('cVeh').value=t.veh||''; $('cTrans').value=t.trans||''; $('cDos').value=t.dos||''; $('cType').value=t.type||'INV';
     withinAssam=(t.pos==='AS'); $('tIn').className=withinAssam?'on':''; $('tOut').className=withinAssam?'':'on';
@@ -516,7 +554,8 @@ $('zoomBtn').addEventListener('click',function(){var b=document.querySelector('.
     render();
   } else {
     addItem();
-    if(qc){ var cc=ADB.customers().find(function(c){return c.name===qc;}); if(cc) fillCustomer(cc); }
+    if(qc){ var cc=ADB.customers().find(function(c){return c.name===qc;}); if(cc){ fillCustomer(cc);
+      if(new URLSearchParams(location.search).get('last')==='1' && cc.items && cc.items.length){ $('loadLast').click(); } } }
   }
   fit();
 })();

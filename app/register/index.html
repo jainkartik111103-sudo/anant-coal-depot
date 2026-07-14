@@ -10,7 +10,7 @@
   :root{--coal:#17160F;--card:#232118;--card2:#2b2920;--gold:#C9A227;--gold-soft:#e6c968;--txt:#f0ede4;--dim:#a49d89;--line:#3c3929;--red:#e09090;--grn:#8fd19e;}
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;background:var(--coal);color:var(--txt);
-       padding:calc(14px + env(safe-area-inset-top)) 0 calc(20px + env(safe-area-inset-bottom));}
+       padding:calc(14px + env(safe-area-inset-top)) 0 calc(80px + env(safe-area-inset-bottom));}
   .wrap{max-width:640px;margin:0 auto;padding:0 14px;}
   .top a{color:var(--dim);font-size:13px;text-decoration:none;}
   h1{font-family:Georgia,serif;font-size:19px;color:var(--gold-soft);font-weight:600;margin:6px 0 10px;}
@@ -78,7 +78,7 @@
     .isig .ln{border-top:1px solid #999;padding-top:3px;margin-top:26px;}
   }
 </style>
-</head>
+<script>window.addEventListener('error',function(e){var b=document.getElementById('bootErr');if(!b){b=document.createElement('div');b.id='bootErr';b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:999;background:#7a1f1f;color:#fff;padding:10px 14px;font:13px -apple-system,sans-serif;';b.innerHTML='App hit an error — close and reopen the app. If it repeats, tell Kartik: '+(e.message||'');document.body.appendChild(b);}});</script></head>
 <body>
 <div class="wrap">
   <div class="top"><a href="../">‹ Anant Business</a></div>
@@ -131,7 +131,11 @@
       <button class="gold" id="rMerge" type="button">🖨 All Invoices (merged, chronological)</button>
       <button id="rOut" type="button">🖨 Outstanding Report</button>
       <button id="rPay" type="button">🖨 Payments Received</button>
-      <button id="rCsv" type="button">⬇ Export CSV / Excel (item-level)</button>
+      <button id="rCsv" type="button">⬇ Register CSV (item-level)</button>
+      <button id="rHsnCsv" type="button">⬇ HSN Summary CSV</button>
+      <button id="rCustCsv" type="button">⬇ Customer Summary CSV</button>
+      <button id="rProdCsv" type="button">⬇ Product Summary CSV</button>
+      <button id="rOutCsv" type="button">⬇ Outstanding CSV</button>
     </div>
     <p class="hint">Every report derives from saved invoices — nothing is entered twice. "All Invoices" re-generates each invoice of the period as one chronological PDF for audit, GST files and records. CSV opens directly in Excel; GST-JSON / Tally export can plug into this same layer later.</p>
   </div>
@@ -181,7 +185,7 @@ function renderReg(){
       +'<div class="l3"><button type="button" class="pay">'+(t.paid?'Mark Pending':'Mark Received')+'</button>'
       +'<a href="../invoice/?load='+encodeURIComponent(t.no)+'">Open · Edit · Resend</a>'
       +'<button type="button" class="rm" style="flex:0 0 44px;color:#e09090;border-color:#5a2020;">🗑</button></div>';
-    d.querySelector('.pay').addEventListener('click',function(){t.paid=!t.paid;ADB.put(t);refresh();});
+    d.querySelector('.pay').addEventListener('click',function(){ if(confirm((t.paid?'Mark '+t.no+' as PENDING again?':'Mark '+t.no+' as payment RECEIVED?'))){t.paid=!t.paid;ADB.put(t);refresh();} });
     d.querySelector('.rm').addEventListener('click',function(){ if(confirm('Delete '+t.no+' permanently?')){ADB.del(t.no);refresh();} });
     el.appendChild(d);
   });
@@ -200,13 +204,16 @@ function agg(a){
     t.items.forEach(function(i){
       var a1=i.q*i.r, g=a1*i.g/100;
       o.prod[i.p]=(o.prod[i.p]||0)+s*a1;
-      var k=i.hsn||'—'; o.hsn[k]=o.hsn[k]||{tv:0,g:0,c:0,rate:i.g};
-      o.hsn[k].tv+=s*a1;o.hsn[k].g+=s*g;o.hsn[k].c+=s*(i.c||0);
+      var inAS=t.pos==='AS', rcx=t.rc;
+      var k=(i.hsn||'—')+'|'+i.g; o.hsn[k]=o.hsn[k]||{hsn:i.hsn||'—',desc:i.p,uqc:i.u,qty:0,tv:0,cg:0,sg:0,ig:0,c:0,rate:i.g};
+      o.hsn[k].qty+=s*i.q; o.hsn[k].tv+=s*a1;
+      if(!rcx&&inAS){o.hsn[k].cg+=s*g/2;o.hsn[k].sg+=s*g/2;} else if(!rcx){o.hsn[k].ig+=s*g;}
+      o.hsn[k].c+=s*(i.c||0);
     });
   });
   return o;
 }
-function top(obj,n){return Object.keys(obj).map(function(k){return [k,obj[k]];}).sort(function(a,b){return b[1]-a[1];}).slice(0,n);}
+function topN(obj,n){return Object.keys(obj).map(function(k){return [k,obj[k]];}).sort(function(a,b){return b[1]-a[1];}).slice(0,n);}
 /* ---------- Dashboard ---------- */
 function renderDash(){
   var o=agg(filtered());
@@ -223,8 +230,8 @@ function renderDash(){
     ['Last Invoice',last?last.no.split('/').pop()+' · ₹'+ADB.fmt(last.gt):'—'],
     ['Last Backup',ADB.lastBackup()?ADB.dmy(ADB.lastBackup()):'Never — export CSV']];
   $('kpis').innerHTML=extra.map(function(k){return '<div class="kpi"><div class="k">'+k[0]+'</div><div class="v" style="font-size:14px">'+k[1]+'</div></div>';}).join('')+$('kpis').innerHTML;
-  $('topC').innerHTML=top(agg(filtered()).cust,5).map(function(x){return '<div class="li"><span>'+esc(x[0])+'</span><b>₹'+ADB.fmt(x[1])+'</b></div>';}).join('')||'<div class="li">—</div>';
-  $('topP').innerHTML=top(agg(filtered()).prod,5).map(function(x){return '<div class="li"><span>'+esc(x[0])+'</span><b>₹'+ADB.fmt(x[1])+'</b></div>';}).join('')||'<div class="li">—</div>';
+  $('topC').innerHTML=topN(agg(filtered()).cust,5).map(function(x){return '<div class="li"><span>'+esc(x[0])+'</span><b>₹'+ADB.fmt(x[1])+'</b></div>';}).join('')||'<div class="li">—</div>';
+  $('topP').innerHTML=topN(agg(filtered()).prod,5).map(function(x){return '<div class="li"><span>'+esc(x[0])+'</span><b>₹'+ADB.fmt(x[1])+'</b></div>';}).join('')||'<div class="li">—</div>';
 }
 /* ---------- Accountant ---------- */
 function renderAcct(){
@@ -253,23 +260,31 @@ function totLine(a){
   var o=agg(a);var cg=0,ig=0;a.forEach(function(t){var s=ADB.sign(t);cg+=s*(t.cg+t.sg);ig+=s*t.ig;});
   return '<div class="tot">Docs: <b>'+o.n+'</b> · Taxable: <b>₹'+ADB.fmt(o.tv)+'</b> · CGST+SGST: <b>₹'+ADB.fmt(cg)+'</b> · IGST: <b>₹'+ADB.fmt(ig)+'</b> · Cess: <b>₹'+ADB.fmt(o.cess)+'</b> · Grand: <b>₹'+ADB.fmt(o.sales)+'</b></div>';
 }
-function hsnTable(a){
+function hsnRows(a){
   var o=agg(a);
-  var rows=Object.keys(o.hsn).sort().map(function(k){var h=o.hsn[k];
-    return '<tr><td>'+esc(k)+'</td><td class="r">'+(h.rate||0)+'%</td><td class="r">'+ADB.fmt(h.tv)+'</td><td class="r">'+ADB.fmt(h.g)+'</td><td class="r">'+ADB.fmt(h.c)+'</td></tr>';}).join('');
-  return '<table class="p"><tr><th>HSN</th><th>GST %</th><th>Taxable Value</th><th>GST Amount</th><th>Cess</th></tr>'+rows+'</table>';
+  return Object.keys(o.hsn).sort().map(function(k){return o.hsn[k];});
+}
+function hsnTable(a){
+  var rows=hsnRows(a).map(function(h){
+    return '<tr><td>'+esc(h.hsn)+'</td><td>'+esc(h.desc)+'</td><td>'+esc(h.uqc)+'</td><td class="r">'+(Math.round(h.qty*1000)/1000)+'</td><td class="r">'+ADB.fmt(h.tv)+'</td><td class="r">'+h.rate+'%</td><td class="r">'+ADB.fmt(h.cg)+'</td><td class="r">'+ADB.fmt(h.sg)+'</td><td class="r">'+ADB.fmt(h.ig)+'</td><td class="r">'+ADB.fmt(h.c)+'</td></tr>';}).join('');
+  return '<table class="p"><tr><th>HSN</th><th>Description</th><th>UQC</th><th>Qty</th><th>Taxable Value</th><th>Rate</th><th>CGST</th><th>SGST</th><th>IGST</th><th>Cess</th></tr>'+rows+'</table>';
+}
+function dlCSV(name, head, rows){
+  var lines=[head.join(',')].concat(rows.map(function(r){return r.map(function(v){v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(',');}));
+  var b=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name+'.csv';document.body.appendChild(a);a.click();a.remove();ADB.stampBackup();
 }
 /* ---------- reports ---------- */
 $('rTx').addEventListener('click',function(){var a=filtered();printHTML(phead('Transaction Summary')+txTable(a)+totLine(a));});
 $('rHsn').addEventListener('click',function(){printHTML(phead('HSN Summary')+hsnTable(filtered()));});
 $('rCust').addEventListener('click',function(){
   var o=agg(filtered());
-  var rows=top(o.cust,999).map(function(x){return '<tr><td>'+esc(x[0])+'</td><td class="r">'+ADB.fmt(x[1])+'</td></tr>';}).join('');
+  var rows=topN(o.cust,999).map(function(x){return '<tr><td>'+esc(x[0])+'</td><td class="r">'+ADB.fmt(x[1])+'</td></tr>';}).join('');
   printHTML(phead('Customer-wise Summary')+'<table class="p"><tr><th>Customer</th><th>Total ₹</th></tr>'+rows+'</table>');
 });
 $('rProd').addEventListener('click',function(){
   var o=agg(filtered());
-  var rows=top(o.prod,999).map(function(x){return '<tr><td>'+esc(x[0])+'</td><td class="r">'+ADB.fmt(x[1])+'</td></tr>';}).join('');
+  var rows=topN(o.prod,999).map(function(x){return '<tr><td>'+esc(x[0])+'</td><td class="r">'+ADB.fmt(x[1])+'</td></tr>';}).join('');
   printHTML(phead('Product-wise Summary')+'<table class="p"><tr><th>Product</th><th>Taxable ₹</th></tr>'+rows+'</table>');
 });
 $('btnAcct').addEventListener('click',function(){
@@ -326,6 +341,22 @@ $('rPay').addEventListener('click',function(){
   var a=filtered().filter(function(t){return t.paid;});
   printHTML(phead('Payments Received')+txTable(a)+totLine(a));
 });
+$('rHsnCsv').addEventListener('click',function(){
+  dlCSV('hsn-summary-'+($('fFrom').value||'all'),['HSN','Description','UQC','Qty','Taxable Value','Rate %','CGST','SGST','IGST','Cess'],
+    hsnRows(filtered()).map(function(h){return [h.hsn,h.desc,h.uqc,h.qty,h.tv.toFixed(2),h.rate,h.cg.toFixed(2),h.sg.toFixed(2),h.ig.toFixed(2),h.c.toFixed(2)];}));
+});
+$('rCustCsv').addEventListener('click',function(){
+  var o=agg(filtered());
+  dlCSV('customer-summary',['Customer','Total'],topN(o.cust,9999).map(function(x){return [x[0],x[1].toFixed(2)];}));
+});
+$('rProdCsv').addEventListener('click',function(){
+  var o=agg(filtered());
+  dlCSV('product-summary',['Product','Taxable'],topN(o.prod,9999).map(function(x){return [x[0],x[1].toFixed(2)];}));
+});
+$('rOutCsv').addEventListener('click',function(){
+  dlCSV('outstanding',['Invoice','Date','Customer','Phone','Total'],
+    filtered().filter(function(t){return t.type!=='CRN'&&!t.paid;}).map(function(t){return [t.no,ADB.dmy(t.date),t.name,t.phone||'',t.gt];}));
+});
 $('rCsv').addEventListener('click',function(){
   var head=['Invoice No','Date','Type','Customer','GSTIN','State','Phone','Vehicle','Product','HSN','Qty','Unit','Rate','Taxable','GST %','CGST','SGST','IGST','Cess','Invoice Total','Payment'];
   var lines=[head.join(',')];
@@ -360,8 +391,14 @@ document.querySelectorAll('.chips button').forEach(function(b){
 });
 ['fFrom','fTo','fQ','fSort'].forEach(function(i){$(i).addEventListener('input',refresh);});
 function refresh(){ if(view==='reg')renderReg(); else if(view==='dash')renderDash(); else if(view==='acct')renderAcct(); }
-setPeriod('month');
+var _p=new URLSearchParams(location.search).get('p');
+if(_p==='pend'){setPeriod('month');$('fSort').value='pend';document.querySelectorAll('.chips button').forEach(function(x){x.className=x.getAttribute('data-p')==='month'?'on':'';});refresh();}
+else if(_p){setPeriod(_p);document.querySelectorAll('.chips button').forEach(function(x){x.className=x.getAttribute('data-p')===_p?'on':'';});}
+else setPeriod('month');
+ADB.onChange(refresh);
+ADB.sync(refresh);
 if('serviceWorker' in navigator){try{navigator.serviceWorker.register('../sw.js');}catch(e){}}
 </script>
+<div style="position:fixed;left:0;right:0;bottom:0;z-index:55;display:flex;background:#1d1b13;border-top:1px solid #3c3929;padding-bottom:env(safe-area-inset-bottom);"><a href="../" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;text-decoration:none;font-size:10.5px;color:#a49d89;"><span style="font-size:18px;">🏠</span>Home</a><a href="../invoice/" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;text-decoration:none;font-size:10.5px;color:#a49d89;"><span style="font-size:18px;">🧾</span>Invoice</a><a href="../register/" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;text-decoration:none;font-size:10.5px;color:#C9A227;font-weight:700;"><span style="font-size:18px;">📒</span>Register</a><a href="../customers/" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;text-decoration:none;font-size:10.5px;color:#a49d89;"><span style="font-size:18px;">👥</span>Customers</a></div>
 </body>
 </html>

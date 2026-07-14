@@ -2,13 +2,49 @@
    saved here powers register, dashboard, accountant working, reports & reprints.
    Storage: localStorage 'acdb_txns' (array). One invoicing device by rule. */
 var ADB = (function(){
-  var KEY='acdb_txns';
+  var KEY='acdb_txns', OUT='acdb_outbox', REV='acdb_rev';
+  var API='api.php'; try{ if(location.pathname.indexOf('/app/')===0) API=location.origin+'/app/api.php'; }catch(e){}
+  var listeners=[]; function onChange(fn){listeners.push(fn);}
+  function emit(){listeners.forEach(function(f){try{f();}catch(e){}});}
+  function outbox(){ try{return JSON.parse(localStorage.getItem(OUT))||[];}catch(e){return [];} }
+  function setOutbox(a){ try{localStorage.setItem(OUT,JSON.stringify(a));}catch(e){} }
+  var syncState={status:'idle', queued:0, last:'', err:''};
+  function enqueue(op){ var a=outbox(); a.push(op); setOutbox(a); syncState.queued=a.length; sync(); }
+  var syncing=false;
+  function sync(cb){
+    if(typeof fetch==='undefined'){syncState.status='local';if(cb)cb();return;}
+    if(syncing){if(cb)cb();return;} syncing=true; syncState.status='sync';
+    var ops=outbox();
+    var push = ops.length ? fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({ops:ops})})
+        .then(function(r){ if(!r.ok)throw ('HTTP '+r.status); return r.json(); })
+        .then(function(){ setOutbox([]); syncState.queued=0; })
+      : Promise.resolve();
+    push.then(function(){ return fetch(API+'?pull=1',{credentials:'same-origin'}); })
+      .then(function(r){ if(!r.ok)throw ('HTTP '+r.status); return r.json(); })
+      .then(function(d){ syncState.err='';
+        if(d && d.txns){
+          var live=d.txns.filter(function(t){return !t._del;});
+          live.sort(function(x,y){ return x.date<y.date?-1:x.date>y.date?1:(x.no<y.no?-1:1); });
+          try{localStorage.setItem(KEY,JSON.stringify(live)); localStorage.setItem(REV,String(d.rev||0));}catch(e){}
+          syncState.status='ok'; syncState.last=new Date().toTimeString().slice(0,5);
+          emit();
+        }
+      })
+      .catch(function(e){ syncState.err=(typeof e==='string'?e:(navigator.onLine?'server unreachable':'no internet')); syncState.status=(outbox().length?'queued':'offline'); })
+      .then(function(){ syncing=false; if(cb)cb(); });
+  }
+  if(typeof window!=='undefined'){
+    window.addEventListener('online',function(){sync();});
+    setInterval(function(){ if(outbox().length||navigator.onLine)sync(); },30000);
+  }
   function all(){ try{ return JSON.parse(localStorage.getItem(KEY))||[]; }catch(e){ return []; } }
   function saveAll(a){ try{ localStorage.setItem(KEY, JSON.stringify(a)); return true; }catch(e){ return false; } }
-  function put(t){ var a=all(); var i=a.findIndex(function(x){return x.no===t.no;}); if(i>=0)a[i]=t; else a.push(t);
-    a.sort(function(x,y){ return x.date<y.date?-1:x.date>y.date?1:(x.no<y.no?-1:1); }); return saveAll(a); }
+  function put(t){ t.u=Date.now();
+    var a=all(); var i=a.findIndex(function(x){return x.no===t.no;}); if(i>=0)a[i]=t; else a.push(t);
+    a.sort(function(x,y){ return x.date<y.date?-1:x.date>y.date?1:(x.no<y.no?-1:1); });
+    var ok=saveAll(a); if(ok)enqueue({op:'put',t:t}); emit(); return ok; }
   function get(no){ return all().find(function(x){return x.no===no;})||null; }
-  function del(no){ saveAll(all().filter(function(x){return x.no!==no;})); }
+  function del(no){ saveAll(all().filter(function(x){return x.no!==no;})); enqueue({op:'del',no:no,u:Date.now()}); emit(); }
   function fmt(n){ return (n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}); }
   var ONES=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
   var TENS=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
@@ -61,7 +97,8 @@ var ADB = (function(){
     return [s.toISOString().slice(0,10), d.toISOString().slice(0,10)];}
   function stampBackup(){try{localStorage.setItem('acdb_lastbak',new Date().toISOString().slice(0,10));}catch(e){}}
   function lastBackup(){try{return localStorage.getItem('acdb_lastbak')||'';}catch(e){return '';}}
-  return {all:all, put:put, get:get, del:del, customers:customers, yesterday:yesterday, week:week,
-          stampBackup:stampBackup, lastBackup:lastBackup, fmt:fmt, words:words, compute:compute,
+  var BUILD='v1.6';
+  return {build:BUILD, all:all, put:put, get:get, del:del, customers:customers, yesterday:yesterday, week:week,
+          stampBackup:stampBackup, lastBackup:lastBackup, sync:sync, onChange:onChange, syncState:syncState, fmt:fmt, words:words, compute:compute,
           sign:sign, b2b:b2b, inRange:inRange, fy:fy, month:month, quarter:quarter, dmy:dmy};
 })();

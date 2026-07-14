@@ -21,7 +21,8 @@
   a.tile,div.tile{display:flex;flex-direction:column;justify-content:space-between;min-height:112px;background:var(--card);
        border:1px solid var(--line);border-radius:16px;padding:16px;text-decoration:none;color:var(--txt);}
   .tile .ico{font-size:26px;}
-  .tile .nm{font-size:15px;font-weight:700;margin-top:10px;}
+  .tile .nm{display:block;font-size:15px;font-weight:700;margin-top:10px;}
+  .tile .st{display:block;}
   .tile .st{font-size:11px;color:var(--dim);margin-top:2px;}
   a.tile:active{background:#2b2920;}
   div.tile{opacity:.45;}
@@ -29,11 +30,12 @@
   .note b{color:var(--gold-soft);}
   .ver{text-align:center;color:#6d6754;font-size:11px;margin-top:20px;}
 </style>
-</head>
+<script>window.addEventListener('error',function(e){var b=document.getElementById('bootErr');if(!b){b=document.createElement('div');b.id='bootErr';b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:999;background:#7a1f1f;color:#fff;padding:10px 14px;font:13px -apple-system,sans-serif;';b.innerHTML='App hit an error — close and reopen the app. If it repeats, tell Kartik: '+(e.message||'');document.body.appendChild(b);}});</script></head>
 <body>
 <div class="wrap">
   <h1>ANANT BUSINESS</h1>
   <div class="sub">Internal tools · Anant Coal Depot · Est. 1990</div>
+  <div id="syncline" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 12px;margin-bottom:14px;color:var(--dim);">…</div>
   <div class="grid">
     <a class="tile" href="invoice/" style="grid-column:1/-1;background:var(--gold);border-color:var(--gold);">
       <span class="ico">🧾</span><span><span class="nm" style="color:#17160F;">＋ New Invoice</span><span class="st" style="color:#5c4d12;">Fill → Save → Send on WhatsApp</span></span></a>
@@ -44,21 +46,35 @@
   <div id="kpis" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;"></div>
   <div class="note" id="recent" style="margin-top:12px;"></div>
   <div class="note"><b>First time on this phone?</b> In Safari tap Share → <b>Add to Home Screen</b>. After that, Anant Business opens like an app and works even with weak internet.</div>
-  <div class="ver">Anant Business v1.2 · private · data stays on this phone</div>
+  <div style="position:fixed;left:0;right:0;bottom:0;z-index:55;display:flex;background:#1d1b13;border-top:1px solid #3c3929;padding-bottom:env(safe-area-inset-bottom);"><a href="" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;text-decoration:none;font-size:10.5px;color:#C9A227;font-weight:700;"><span style="font-size:18px;">🏠</span>Home</a><a href="invoice/" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;text-decoration:none;font-size:10.5px;color:#a49d89;"><span style="font-size:18px;">🧾</span>Invoice</a><a href="register/" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;text-decoration:none;font-size:10.5px;color:#a49d89;"><span style="font-size:18px;">📒</span>Register</a><a href="customers/" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;text-decoration:none;font-size:10.5px;color:#a49d89;"><span style="font-size:18px;">👥</span>Customers</a></div>
+<div class="ver" style="padding-bottom:70px;">Anant Business · private · data stays on this phone</div>
 </div>
 <script src="db.js"></script>
 <script>
-(function(){
+function renderHome(){
   var kp=document.getElementById('kpis'), rc=document.getElementById('recent');
   var all=ADB.all(), td=new Date().toISOString().slice(0,10);
   var tds=all.filter(function(t){return t.date===td;}), tdS=0; tds.forEach(function(t){tdS+=ADB.sign(t)*t.gt;});
   var m=ADB.month(), ms=0, out=0, pend=0;
   all.forEach(function(t){ if(ADB.inRange(t,m[0],m[1]))ms+=ADB.sign(t)*t.gt; if(t.type!=='CRN'&&!t.paid){out+=t.gt;pend++;} });
   function card(k,v){return '<div style="background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px;"><div style="font-size:10.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;">'+k+'</div><div style="font-size:15px;font-weight:800;color:var(--gold-soft);margin-top:2px;">'+v+'</div></div>';}
-  kp.innerHTML=card("Today\u2019s Sales",'₹'+ADB.fmt(tdS))+card("Today\u2019s Invoices",tds.length)+card('Pending Payments',pend+' · ₹'+ADB.fmt(out))+card('Month Sales','₹'+ADB.fmt(ms));
+  kp.innerHTML='<a href="register/?p=today" style="text-decoration:none;">'+card("Today\u2019s Sales",'₹'+ADB.fmt(tdS))+'</a><a href="register/?p=today" style="text-decoration:none;">'+card("Today\u2019s Invoices",tds.length)+'</a><a href="register/?p=pend" style="text-decoration:none;">'+card('Pending Payments',pend+' · ₹'+ADB.fmt(out))+'</a><a href="register/?p=month" style="text-decoration:none;">'+card('Month Sales','₹'+ADB.fmt(ms))+'</a>';
   var last=all.slice(-3).reverse();
   rc.innerHTML='<b>Recent</b><br>'+(last.length?last.map(function(t){return t.no.split('/').pop()+' · '+t.name+' · ₹'+ADB.fmt(t.gt)+(t.paid?' ✓':' ⏳');}).join('<br>'):'No invoices yet — tap New Invoice to begin.')+'<br><span style="color:var(--dim)">Last backup: '+(ADB.lastBackup()?ADB.lastBackup().split('-').reverse().join('/'):'never — export CSV from Reports')+'</span>';
-})();
+}
+function renderSync(){
+  var el=document.getElementById('syncline'); if(!el)return;
+  var st=ADB.syncState;
+  if(st.status==='ok') el.innerHTML='✓ Synced'+(st.last?' · '+st.last:'')+' <span style="color:#6d6754">· '+ADB.build+'</span>';
+  else if(st.status==='sync') el.innerHTML='↻ Syncing… <span style="color:#6d6754">· '+ADB.build+'</span>';
+  else if(st.status==='queued') el.innerHTML='⚠ '+(st.err||'Offline')+' · '+st.queued+' waiting to sync <span style="color:#6d6754">· '+ADB.build+'</span>';
+  else if(st.status==='offline') el.innerHTML='⚠ Not synced'+(st.err?' — '+st.err:'')+' — retrying automatically <span style="color:#6d6754">· '+ADB.build+'</span>';
+  else el.innerHTML='· '+ADB.build;
+}
+setInterval(renderSync,4000); renderSync();
+renderHome();
+ADB.onChange(function(){renderHome();renderSync();});
+ADB.sync();
 if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js');}catch(e){}}</script>
 </body>
 </html>
